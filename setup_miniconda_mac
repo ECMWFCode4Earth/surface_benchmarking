@@ -1,2 +1,7 @@
 curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o miniconda.sh
 bash miniconda.sh -b -p $HOME/miniconda
+export PATH="$HOME/miniconda/bin:$PATH"
+conda create -n landver_env -c conda-forge python=3.8 mamba
+source activate landver_env
+mamba install -c conda-forge numpy==1.20.1 xarray==0.16.2 pandas==1.2.2 numba cartopy jupyter pykdtree pyresample statsmodels pip metview
+pip install seaborn metview
