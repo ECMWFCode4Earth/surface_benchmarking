@@ -1,6 +1,6 @@
 Introduction:
 
-Welcome to the surface benchmarking challenge, which uses the ECMWF land surface validation tool called "landver" (Fairbairn et al., 2019). An example is setup here to validate soil moisture and soil temperature over 2020 using in situ observations from the international soil moisture network (Dorigo et al., 2011). In situ data from the SMOSMANIA network has also been provided directly by Meteo-France (Calvet et al., 2008). Two analysis products are considered here (i) the ERA5 reanalysis (labelled 0001_ea) (Hersbach et al., 2020), which is freely available on the Copernicus climate data store (C3S, 2023); (ii) research experiment with an updated vegetation mapping (labelled hyfs_rd). For each of these experiments, soil moisture and soil temperature files are provided at 00 and 12 UTC over 2020. Below you will find instructions on how to carry out the SM/ST validation for these datasets. Additional Information and references for the in situ network providers can be found in the Section "In situ data providers" at the end of this document. Additional instructions on landver and interpreting the results can be found here: https://confluence.ecmwf.int/display/~dadf/LANDVER
+Welcome to the surface benchmarking challenge, which uses the ECMWF land surface validation tool called "landver" (Fairbairn et al., 2019). An example is setup here to validate soil moisture and soil temperature over 2020 using in situ observations from the international soil moisture network (Dorigo et al., 2011). In situ data from the SMOSMANIA network has also been provided directly by Meteo-France (Calvet et al., 2008). Two analysis products are considered here (i) the ERA5 reanalysis (labelled 0001_ea) (Hersbach et al., 2020), which is freely available on the Copernicus climate data store (C3S, 2023); (ii) research experiment with an updated vegetation mapping (labelled hyfs_rd). For each of these experiments, soil moisture and soil temperature files are provided at 00 and 12 UTC over 2020. Below you will find instructions on how to carry out the SM/ST validation for these datasets. Then some exercises are suggested to understand the performance metrics. Additional Information and references for the in situ network providers can be found in the Section "In situ data providers" at the end of this document. Additional instructions on landver and interpreting the results can be found here: https://confluence.ecmwf.int/display/~dadf/LANDVER
 
 Instructions:
 
@@ -10,11 +10,11 @@ Instructions:
 
 3. Download the landver python code on this github repository (landver_code.zip) and unzip. Following the instructions in the README file in the landver_code folder to run the landver example validating SM and ST. The results can be found in the html output. Some examples intepreting other experiments can be found on the confluence page (https://confluence.ecmwf.int/display/~dadf/LANDVER) or in Fairbairn et al. (2019). 
 
-4. 
+Exercises:
 
-4.1 The Pearson R anomaly correlation coefficient is arguably one of the best metrics for SM/ST validation as it measures correlations in temporal variability. How do the surface and root-zone SM/ST Pearson R anomalies compare for the two experiments? Are there significant differences in performance between the two experiments? Are there significant differences in performance between the different networks?   
+1. The Pearson R anomaly correlation coefficient is arguably one of the best metrics for SM/ST validation as it measures correlations in temporal variability. How do the surface and root-zone SM/ST Pearson R anomalies compare for the two experiments? Are there significant differences in performance between (i) the two experiments? (ii) different networks (iii) different seasons? 
 
-4.2 Do the relative performance in anomaly correlations translate to the other metrics (e.g. RMSE, bias)? What could influence absolute differences in soil moisture between the two experiments and the in situ data?
+2. Do the relative performance in anomaly correlations translate to the other metrics (e.g. RMSE, bias)? What could influence absolute differences in SM/ST between the two experiments and the in situ data?
 
 
 In situ data providers:
