@@ -12,9 +12,9 @@ Instructions:
 
 4. 
 
-4.1 The Pearson R anomaly correlation coefficient is arguably one of the best metrics for SM/ST validation as it measure primarily correlations in temporal variability. How do the surface and root-zone SM/ST Pearson R anomalies compare for the two experiments? Are there significant differences in performance between the two experiments? Are there significant differences in performance between the different networks?   
+4.1 The Pearson R anomaly correlation coefficient is arguably one of the best metrics for SM/ST validation as it measures correlations in temporal variability. How do the surface and root-zone SM/ST Pearson R anomalies compare for the two experiments? Are there significant differences in performance between the two experiments? Are there significant differences in performance between the different networks?   
 
-4.2 Do the relative performance in anomaly correlations translate to the other metrics (e.g. RMSE, bias)? What could influence absolute differences in soil moisture other than the temporal variability? 
+4.2 Do the relative performance in anomaly correlations translate to the other metrics (e.g. RMSE, bias)? What could influence absolute differences in soil moisture between the two experiments?
 
 
 In situ data providers:
