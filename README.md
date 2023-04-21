@@ -14,19 +14,28 @@ Instructions:
 In situ data providers:
 
 The analysis soil moisture is validated against in situ observations form the ISMN (Dorigo et al., 2011), which are already extracted and preprocessed in the insitu_dir in LDAS_config. The in situ observations and potentially erroneous observations are screened (due to frozen conditions, spurious spikes, etc...). The networks consist of SCAN, USCRN and SNOTEL in the US, SMOSMANIA in France, REMEDHUS in Spain and Oznet in Australia. 
+
     SCAN (Schaefer et al., 2007), US (up to 184 stations): Obs depths (10, 20, 50, 100 cm)
-    USCRN, US (up to 109 stations): Obs depths (10, 20, 50, 100 cm)
-    SNOTEL, US (up to 380 stations): Obs depths (10, 20, 50, 100 cm)
-    SMOSMANIA, France (up to 21 stations): Obs depths (0, 10, 20, 30 cm)
-    REMEDHUS, Spain (Up to 16 stations): Obs depths (5 cm)
-    OZNET, Australia (Up to 37 stations): Obs depths (4, 15,45, 75 cm)
-    TERENO, Germany (Up to 4 stations): Obs depths (5, 20, 50 cm)
+    
+    USCRN (Bell et al., 2013), US (up to 109 stations): Obs depths (10, 20, 50, 100 cm)
+    
+    SNOTEL (Schaefer et al., 2007), US (up to 380 stations): Obs depths (10, 20, 50, 100 cm)
+    
+    SMOSMANIA (Calvet et al., 2007, Albergel et al., 2008), France (up to 21 stations): Obs depths (0, 10, 20, 30 cm)
+    
+    REMEDHUS (Martínez-Fernández and Ceballos, 2005), Spain (Up to 16 stations): Obs depths (5 cm)
+    
+    OZNET (Smith et al., 2012), Australia (Up to 37 stations): Obs depths (4, 15,45, 75 cm)
+    
+    TERENO (Zacharias et al., 2011, Bogena et al., 2018), Germany (Up to 4 stations): Obs depths (5, 20, 50 cm)
 
 References:
 
 C. Albergel, C. Rudiger, T. Pellarin, J.-C. Calvet, N. Fritz, F. Froissard, D. Suquia, A. Petitpa, B. Piguet, and E. Martin, “From near-surface to root-zone soil moisture using anexponential filter: an assessment of the method based on in situ observations and model simulations,” Hydrol. Earth Syst. Sci., vol. 12, pp. 1323–1337, 2008.
 
 J. E. Bell, M. A. Palecki, C. Baker, W. Collins, J. Lawrimore, R. Leeper, M. Hall, J. Kochendorfer, T. Meyers, T. Wilson, and H. Diamond, “U.S. Climate Reference Network soil moisture and temperature observations,” J. Hydrometeor., vol. 14, pp. 977–988, 2013.
+
+Bogena, H.R., Montzka, C., Huisman, J.A., Graf, A., Schmidt, M., Stockinger, M., Von Hebel, C., Hendricks-Franssen, H.J., Van der Kruk, J., Tappe, W. and Lücke, A., 2018. The TERENO‐Rur hydrological observatory: A multiscale multi‐compartment research platform for the advancement of hydrological science. Vadose Zone Journal, 17(1), pp.1-22, https://doi.org/10.2136/vzj2018.03.0055;
 
 J. Calvet, N. Fritz, F. Froissard, D. Suquia, A. Petitpa, and B. Piguet, “In situ soil moisture observations for the CAL/VAL of SMOS: the SMOSMANIA network.” in Geoscience and Remote Sensing Symposium, IGARSS 2007., vol. 16 (3). IEEE International, 2007, pp. 1293–1314.
 
@@ -41,3 +50,8 @@ Hersbach, H., Bell, B., Berrisford, P., Hirahara, S., Horányi, A., Muñoz‐Sab
 J. Martínez-Fernández and A. Ceballos, “Mean soil moisture estimation using temporal stability analysis,” J. Hydrol., vol. 312, pp. 28–38, 2005.
 
 G. Schaefer, M. Cosh, and T. Jackson, “The USDA natural resources conservation service soil climate analysis network (SCAN),” J. Atmos. Oceanic Technol., vol. 24(2), pp. 2073–2077, 2007.
+
+Smith, A. B., Walker, J. P., Western, A. W., Young, R. I., Ellett, K. M., Pipunic, R. C., Grayson, R. B., Siriwidena, L., Chiew, F. H. S. and Richter, H. The Murrumbidgee Soil Moisture Monitoring Network Data Set. Water Resources Research, vol. 48, W07701, 6pp., 2012 doi:10.1029/2012WR011976 
+
+Zacharias, S., H.R. Bogena, L. Samaniego, M. Mauder, R. Fuß, T. Pütz, M. Frenzel, M. Schwank, C. Baessler, K. Butterbach-Bahl, O. Bens, E. Borg, A. Brauer, P. Dietrich, I. Hajnsek, G. Helle, R. Kiese, H. Kunstmann, S. Klotz, J.C. Munch, H. Papen, E. Priesack, H. P. Schmid, R. Steinbrecher, U. Rosenbaum, G. Teutsch, H. Vereecken. 2011. A Network of Terrestrial Environmental Observatories in Germany. Vadose Zone J. 10. 955–973, https://doi.org/10.2136/vzj2010.0139;
+
