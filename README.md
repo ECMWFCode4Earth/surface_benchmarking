@@ -1,8 +1,8 @@
-Introduction:
+# Introduction:
 
 Welcome to the surface benchmarking challenge, which uses the ECMWF land surface validation tool called "landver" (Fairbairn et al., 2019). Before starting the challenge, it is useful to understand the existing SM/ST validation, as many of the same functionalities could be used for developing the validation of surface fluxes. An example is setup here to validate soil moisture and soil temperature over 2020 using in situ observations from the international soil moisture network (Dorigo et al., 2011). In situ data from the SMOSMANIA network has also been provided directly by Meteo-France (Calvet et al., 2007, Albergel et al., 2008). Two analysis products are considered here (i) the ERA5 reanalysis (labelled 0001_ea) (Hersbach et al., 2020), which is freely available on the Copernicus climate data store (C3S, 2023); (ii) research experiment with an updated vegetation mapping (labelled hyfs_rd). For each of these experiments, soil moisture and soil temperature files are provided daily at 00 and 12 UTC over 2020. Below you will find instructions on how to carry out the SM/ST validation for these datasets. Then some exercises are suggested to understand the performance metrics. Additional Information and references for the in situ network providers can be found in the Section "In situ data providers" at the end of this document. Additional instructions on landver and interpreting the results can be found here: https://confluence.ecmwf.int/display/~dadf/LANDVER
 
-Instructions:
+## Instructions:
 
 1. Setup a local conda environment and install the necessary software by downloading and running one of the following scripts in this github repository (i) setup_miniconda_linux (for linux users) or (ii) setup_miniconda_mac (for mac users). Unfortunately the installation for windows is not currently available. Note that each time you run landver you need to activate the local environment by following steps 3 and 5.    
 
@@ -10,14 +10,14 @@ Instructions:
 
 3. Download the landver python code on this github repository (landver_code.zip) and unzip. Following the instructions in the README file in the landver_code folder to run the landver example validating SM and ST. The results can be found in the html output. Some examples intepreting other experiments can be found on the confluence page (https://confluence.ecmwf.int/display/~dadf/LANDVER) or in Fairbairn et al. (2019). 
 
-Exercises:
+## Exercises:
 
 1. The Pearson R anomaly correlation coefficient is arguably one of the best metrics for SM/ST validation as it measures correlations in temporal variability. How do the surface and root-zone SM/ST Pearson R anomalies compare for the two experiments? Are there significant differences in performance between (i) the two experiments? (ii) different networks (iii) different seasons? 
 
 2. Do the relative performance in anomaly correlations translate to the other metrics (e.g. RMSE, bias)? What could influence absolute differences in SM/ST between the two experiments and the in situ data?
 
 
-In situ data providers:
+## In situ data providers:
 
 The analysis soil moisture is validated against in situ observations form the ISMN (Dorigo et al., 2011), which are already extracted and preprocessed in the insitu_dir in LDAS_config. The in situ observations and potentially erroneous observations are screened (due to frozen conditions, spurious spikes, etc...). The networks consist of SCAN, USCRN and SNOTEL in the US, SMOSMANIA in France, REMEDHUS in Spain and Oznet in Australia. 
 
@@ -35,7 +35,7 @@ The analysis soil moisture is validated against in situ observations form the IS
     
     TERENO (Zacharias et al., 2011, Bogena et al., 2018), Germany (Up to 4 stations): Obs depths (5, 20, 50 cm)
 
-References:
+# References:
 
 C. Albergel, C. Rudiger, T. Pellarin, J.-C. Calvet, N. Fritz, F. Froissard, D. Suquia, A. Petitpa, B. Piguet, and E. Martin, “From near-surface to root-zone soil moisture using anexponential filter: an assessment of the method based on in situ observations and model simulations,” Hydrol. Earth Syst. Sci., vol. 12, pp. 1323–1337, 2008.
 
