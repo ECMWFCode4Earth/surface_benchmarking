@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Script to perform validation of two or more soil moisture or soil temperature analyses.
-Last modified by David Fairbairn on 5/4/22. 
+History:
+2022-04-05: Script to perform validation of two or more soil moisture or soil temperature analyses, by David Fairbairn.
+2023-07-21: Adaptation for fluxes, by Laura Mack. 
 """
 import numpy as np
 import glob
@@ -223,8 +224,9 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         Data_available[network][str(yr)] = True
                 except:
                     Data_available[network][str(yr)] = False
+        """
         if var == "SM":
-            # Check if analysis temperature files are available for filtering frozen soil moisture: ---- not used
+            # Check if analysis temperature files are available for filtering frozen soil moisture: ---- not used for fluxes
             if cfg.ST_quality_control:
                 try:
                     file_ST[network][str(yr)] = sorted(
@@ -236,7 +238,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                     else:
                         ST_data_available[network][str(yr)] = True
                 except:
-                    ST_data_available[network][str(yr)] = False #---------------
+                    ST_data_available[network][str(yr)] = False """
 
         # Loop over networks:
         for n, network in enumerate(cfg.Network):
@@ -250,7 +252,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                 + EXP
             )
             preprocessed_in_situ_dir = cfg.in_situ_dir + "/" + network
-            #depths, analysis_depths = ldasv.network_SM_depths(network)
+            #print(preprocessed_in_situ_dir)
 
             # Loop over layers:
             for l, layer in enumerate(cfg.validation_layer):

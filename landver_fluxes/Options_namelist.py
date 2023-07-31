@@ -18,7 +18,8 @@ ANOFFSET =  ["9","9"]
 STREAM =    ["oper","oper"]
 REPRES =    ["SH","SH"]
 LEVTYPE =   ["SFC","SFC"]
-TIME      = ["00/12","00/12"] 
+TIME = ["00/12","00/12"]
+TIME_RES = ["12","2"] #every ith requested value, note: depends on original resolution
 STEP =      ["00","00"]
 DOMAIN =    ["G","G"]
 GRID =      ["av","av"]
@@ -29,5 +30,6 @@ notes:
 - SM, ST files had the format yyyymmddhh but the fluxes files have yyyymm, so we need to extract the rest from the file itself, but probably it's easier to use the resolution than
 - era5 and hyfs contain differently accumulated data, so they have to be processed accordingly (in the loop over EXPVER, you have to know which experiment)
 - add a namelist parameter for resolution? or still use time?
+- pre_process_SH/LH: separately, or better just one pre_process_fluxes (since they are currently stored in the same grib file)
 -> all in LANDVER_pre.py
 """
