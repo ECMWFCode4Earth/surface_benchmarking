@@ -62,6 +62,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
         )
 
     for e, EXP in enumerate([m + "_" + n for m, n in zip(cfg.EXPVER, cfg.CLASS)]):
+        print(EXP)
         # Data times
         try:
             Time_freq = cfg.TIME[e].split("/")
@@ -168,6 +169,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
         # Check in situ data and analysis data are present:
         for n, network in enumerate(cfg.Network):
+            print(network)
             file[network] = dict()
             file_ST[network] = dict()
             file_in_situ[network] = dict()
@@ -182,7 +184,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                 + "/"
                 + EXP
             )
-
+        
             time_series_dir_net = time_series_dir + network
             ensure_dir(time_series_dir_net)
 
@@ -190,19 +192,23 @@ def in_situ_validation(cfg, var, times, land_type, df):
             #depths, analysis_depths = ldasv.network_SM_depths(network) #just one here "surface" ... not needed?
 
             for yr in years.year:
+                print(yr)
                 try:
-                    file[network][str(yr)] = sorted(
+                    file[network][str(yr)] = sorted( #file: list of all preprocessed file per experiment, network and year
                         glob.glob(
-                            preprocessed_analysis_dir + "/" + str(yr) + "/" + var + "*"
+                            preprocessed_analysis_dir + "/" + str(yr) + "/fluxes" + "*"
                         ),
                         key=ldasv.numericalSort,
                     )
+                    
                     if len(file[network][str(yr)]) < 1:
                         Analysis_available[network][str(yr)] = False
                     else:
                         Analysis_available[network][str(yr)] = True
                 except:
                     Data_available[network][str(yr)] = False
+
+                print(preprocessed_in_situ_dir)
                 try:
                     file_in_situ[network][str(yr)] = sorted(
                         glob.glob(
@@ -211,13 +217,13 @@ def in_situ_validation(cfg, var, times, land_type, df):
                             + str(yr)
                             + "/"
                             + network
-                            + "_"
-                            + "%.2f" % (depths[0])
+                            #+ "_"
+                            #+ "%.2f" % (depths[0]) #no depth for fluxes
                             + "*"
                         ),
                         key=ldasv.numericalSort,
                     )
-
+                    print(file_in_situ)
                     if len(file_in_situ[network][str(yr)]) < 1:
                         Data_available[network][str(yr)] = False
                     else:
@@ -559,7 +565,8 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
                 # Loop over the stations:
                 for i in range(len(lat_lon_list["merged"]["analysis_index"])):
-
+                    print("station index"+str(i))
+                    
                     if len(lat_lon_list["merged"]["analysis_index"]) == 0:
                         print("No " + land_type + " available for network " + network)
                         break
@@ -588,14 +595,18 @@ def in_situ_validation(cfg, var, times, land_type, df):
                     insitu_df = pd.DataFrame(pl.empty((data_range.size)), data_range)
                     analysis_df = pd.DataFrame(pl.empty((data_range.size)), data_range)
 
+                    print(insitu_df)
+                    print(analysis_df)
+
+                    """
                     if layer == "Surface":
                         insitu_depths = [depths[0]]
                         an_depths = [analysis_depths[0]]
                     elif layer == "Rootzone":
                         insitu_depths = depths
-                        an_depths = analysis_depths
+                        an_depths = analysis_depths"""
 
-                    if (var == "SM") and (cfg.ST_quality_control): #--- not adapted
+                    if (var == "SM") and (cfg.ST_quality_control):
                         ST_insitu_df = pd.DataFrame(
                             pl.empty((data_range.size)), data_range
                         )
