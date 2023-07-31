@@ -566,7 +566,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                 # Loop over the stations:
                 for i in range(len(lat_lon_list["merged"]["analysis_index"])):
                     print("station index"+str(i))
-                    
+
                     if len(lat_lon_list["merged"]["analysis_index"]) == 0:
                         print("No " + land_type + " available for network " + network)
                         break
@@ -606,6 +606,23 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         insitu_depths = depths
                         an_depths = analysis_depths"""
 
+
+                    #test
+                    print("test function")
+                    print(preprocessed_in_situ_dir)
+                    insitu_df, max_insitu, min_insitu = ldasv.read_fluxes_insitu(
+                        var,
+                        preprocessed_in_situ_dir,
+                        years.year,
+                        network,
+                        lat_insitu,
+                        lon_insitu,
+                        data_range,
+                        cfg.daily_obs_time_average)
+
+                    print(insitu_df)
+                    print("end test")
+                    ### read (and rescale) preprocessed insitu and analysis data
                     if (var == "SM") and (cfg.ST_quality_control):
                         ST_insitu_df = pd.DataFrame(
                             pl.empty((data_range.size)), data_range
@@ -624,13 +641,10 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         network,
                         lat_insitu,
                         lon_insitu,
-                        insitu_depths,
                         data_range,
-                        cfg.ST_quality_control,
-                        cfg.daily_obs_time_average,
-                        cfg.Rescale_data,
-                        cfg.ST_QC_threshold - 273.15,
+                        cfg.daily_obs_time_average
                     )
+                    #remark: even if the argument of the functions is "years", always just one year is requested
 
                     analysis_df, ST_df = ldasv.read_and_rescale_analysis_data(
                         var,
@@ -650,6 +664,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
                     insitu_df.loc[:][pl.isnan(analysis_df.loc[:])] = pl.nan
 
+                    ### orography ### (not yet used for fluxes)
                     if cfg.filterOro: #if orography considered
 
                         for yr_count in years.year:
@@ -719,6 +734,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                                 if cfg.ST_quality_control and (var == "SM"):
                                     ST_df.loc[str(yr_count)] = np.nan
 
+                    ### start validation ###
                     # ANOMALY time-series using 5 week moving average
                     insitu_ano = np.copy(insitu_df.values * np.nan)
                     analysis_ano = np.copy(analysis_df.values * np.nan)

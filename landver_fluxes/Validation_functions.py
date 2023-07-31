@@ -608,6 +608,41 @@ def numericalSort(value):
     return parts
 
 
+def read_fluxes_insitu(
+    var_type,
+    data_dir,
+    years,
+    network,
+    lat,
+    lon,
+    data_range,
+    daily_obs_time_average=False):
+    """
+    reads the insitu data per network and station, but possibly several years
+    @return flux_data_insitu, max_insitu, min_insitu
+    """
+    #print(network)
+    #print(lat)
+    #print(lon)
+    for yr in years:
+        print(data_dir+"/"+str(yr)+"/"+network+"*"+str(lat)+"_"+str(lon)+"*")
+        file=glob.glob(data_dir+"/"+str(int(yr))+"/"+network+"*"+str(lat)+"_"+str(lon)+"*")
+    
+    print("file:" + file[0])
+    dat=pd.read_pickle(file[0])
+    if var_type=="SH":
+        tmp=dat["H_CORR"]
+    elif var_type=="LH":
+        tmp=dat["LE_CORR"]
+    else:
+        print("WARNING: you try to request an unknown flux type")
+
+    return(tmp,np.nanmax(tmp),np.nanmin(tmp))
+
+def read_fluxes_analysis():
+    """
+    """
+
 ###############################################################################
 # Plotting functions:
 ###############################################################################

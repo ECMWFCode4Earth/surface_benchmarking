@@ -78,7 +78,7 @@ class LDAS_config(object):
             "REPRES": list,
             "LEVTYPE": list,
             "TIME": list,
-            "TIME_RES": list,
+            #"TIME_RES": list,
             "STEP": list,
             "DOMAIN": list,
             "GRID": list,
@@ -89,13 +89,13 @@ class LDAS_config(object):
         #self.extract_SH = False  # Extract grib files from MARS (required for preprocessing) #not yet implemented for fluxes
         #self.extract_LH = False  # Extract grib files from MARS (required for preprocessing)
         self.pre_process_SH = (
-           True  # Preprocess sensible heat flux (required for validation)
+           False  # Preprocess sensible heat flux (required for validation)
         )
         self.pre_process_LH = ( 
-            True # Preprocess latent heat flux (required for validation)
+            False # Preprocess latent heat flux (required for validation)
         )
         self.pre_process_fluxes = ( 
-            True # Preprocess fluxes (SH and LH together since they are in the same file)
+            False # Preprocess fluxes (SH and LH together since they are in the same file)
         )
         #still to be decided: pre_processing separately or together?
 
