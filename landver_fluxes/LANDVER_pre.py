@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from importlib.metadata import files
 import os
 import numpy as np
 import pandas as pd
@@ -43,7 +44,11 @@ def numericalSort(value):
 
 
 def preprocessData(cfg):
-
+    """ preprocessing of analyses
+    @param: cfg config class
+    @return: no return, writes a csv file of preprocessed data for every experiment and every station (per network) in the pre_processed_data directory, 
+            output file format: yyyymmddhh sh lh, output file name: fluxes_lat,lon [station]
+    """
     # Ensure directories exist
     ensure_dir(cfg.output_dir)
     ensure_dir(cfg.output_dir + "/analysis_data")
@@ -256,10 +261,11 @@ def preprocessData(cfg):
 
         # Data times
 
-        for n, network in enumerate(cfg.Network): #for every network n
+        for n, network in enumerate(cfg.Network): #for every network n, network
 
-            for e, EXP in enumerate(cfg.EXPVER): #for every experiment e
-                Time_freq = cfg.TIME[e].split("/")
+            for e, EXP in enumerate(cfg.EXPVER): #for every experiment e, EXP
+                print("... pre-processing of experiment [index, name]: " + str(e) + ", " + str(EXP))
+                Time_freq = cfg.TIME[e].split("/") #takes TIME from namelist -> Time_freq is list of selected times (hour)
                 if len(Time_freq) > 1:
                     time_interval = str(int(Time_freq[1][:2]) - int(Time_freq[0][:2]))
                     data_range = pd.date_range(
@@ -329,12 +335,13 @@ def preprocessData(cfg):
                         )
                         continue
 
-                    if cfg.pre_process_SH: ########################## preprocessing #############
+                    if cfg.pre_process_SH or cfg.pre_process_LH:
                         try:
-                            file = sorted( #the two fluxes are in the same file
+                            file = sorted( #list of all file names per year, per experiment (the two fluxes are in the same files)
                                 glob.glob(grib_dir + str(yr) + "/fluxes*"),
                                 key=numericalSort,
                             )
+                            #print(file)
                             if len(file) < 1:
                                 raise Exception(
                                     "No analysis fluxes files available in"
@@ -349,28 +356,6 @@ def preprocessData(cfg):
                                 + str(yr)
                                 + ". Check they are extracted."
                             )
-
-                    if cfg.pre_process_LH:
-                        try:
-                            file_ST = sorted(
-                                glob.glob(grib_dir + str(yr) + "/fluxes*"),
-                                key=numericalSort,
-                            )
-                            if len(file_ST) < 1:
-                                raise Exception(
-                                    "No analysis fluxes files available in"
-                                    + grib_dir
-                                    + str(yr)
-                                    + ". Check they are extracted."
-                                )
-                        except:
-                            raise Exception(
-                                "No analysis fluxes files available in "
-                                + grib_dir
-                                + str(yr)
-                                + ". Check they are extracted."
-                            )
-
                     print(
                         "\nPreprocessing data for experiment "
                         + EXP
@@ -385,6 +370,7 @@ def preprocessData(cfg):
                     ensure_dir(preprocessed_dir + "/" + str(yr))
                     ensure_dir(preprocessed_dir + "/" + str(yr))
 
+                    #meta data stations
                     station_info = (
                         cfg.in_situ_dir
                         + "/station_info/"
@@ -394,127 +380,142 @@ def preprocessData(cfg):
                         + str(yr)
                     )
 
-                    stations = np.loadtxt(station_info, str, comments="%", skiprows=1)
-                    lat = stations[:, 1].astype("float")
-                    lon = stations[:, 2].astype("float")
+                    stations = np.loadtxt(station_info, str, comments="%", skiprows=1) 
+                    lat = stations[:, 1].astype("float") #list of lat
+                    lon = stations[:, 2].astype("float") #list of lon
 
                     annual_data_range = data_range[data_range.year == yr]
+                    print("length of annual_data_range: " + str(len(annual_data_range)))
 
-                    n_elements=806
-                    if cfg.pre_process_SH:
-                        data_series_SH = xr.DataArray(
-                            pl.empty((annual_data_range.size, len(lat), n_elements)),
-                            coords=[annual_data_range, range(len(lat)), range(n_elements)],
-                            dims=["major_axis", "minor_axis", "items"],
-                        )
-
-                    if cfg.pre_process_LH:
-                        data_series_LH = xr.DataArray(
-                            pl.empty((annual_data_range.size, len(lat), n_elements)),
-                            coords=[annual_data_range, range(len(lat)), range(n_elements)],
+                    if cfg.pre_process_fluxes:
+                        data_series_fluxes = xr.DataArray(
+                            pl.empty((annual_data_range.size, len(lat), 2)), #2 instead of 4, since we have sh and lh (just sfc level)
+                            coords=[annual_data_range, range(len(lat)), range(2)],
                             dims=["major_axis", "minor_axis", "items"],
                         )
 
                     n_tasks = annual_data_range.size
                     task = 0
 
-                    for d in annual_data_range:
+                    nl=0
+                    for idf in range(len(file)):
+                        f=file[idf]
                         showProgress(task, n_tasks)
                         task += 1
 
-                        day_fc = d - pd.Timedelta(int(cfg.STEP[e]), "h")
-                        print(n,e,yr,d)
-                        if cfg.pre_process_SH or cfg.pre_process_LH:
-                            fset1 = mv.read(
-                                grib_dir
-                                + str(day_fc.year)
-                                + "/fluxes_"
-                                + str(cfg.EXPVER[e]) #fluxes file names contain experiment
-                                + "_"
-                                + str(day_fc.year)
-                                + "%02d" % (day_fc.month)
+                        #day_fc = d - pd.Timedelta(int(cfg.STEP[e]), "h")
+                        #print(n,e,yr,d)
+                        if cfg.pre_process_SH or cfg.pre_process_LH or cfg.pre_process_fluxes:
+                            fset1 = mv.read(f)
+                            #fset1 = mv.read( #this works as well
+                            #    grib_dir
+                            #    + str(day_fc.year)
+                            #    + "/fluxes_"
+                            #    + str(cfg.EXPVER[e]) #fluxes file names contain experiment
+                            #    + "_"
+                            #    + str(day_fc.year)
+                            #    + "%02d" % (day_fc.month)
                                 #+ "%02d" % (day_fc.day) #fluxes file names have no day
                                 #+ "%02d" % (day_fc.hour) #fluxes file names have no hour
                                 #+ ".grib" #fluxes files do not have the extension
-                            )
-                            print("\n... read fluxes file")
+                            #)
+                            print("\n... read fluxes file: " + f)
 
                             file_sh=fset1["sshf"]
-                            print("... selected sshf from file")
-                            coords=[lat,lon] #that's a list of pairs (lat,lon)
-                            #print(coords)
-                            #print(d)
-                            data_series_SH.loc[d, :, :] = mv.nearest_gridpoint( 
-                                file_sh,lat,lon
-                            ).transpose()
-
-                            print("... selected nearest gridpoint (sshf)")
-
-                            data_series_SH.loc[d, :, :].fillna(1.7e38)
-
-                        if cfg.pre_process_LH:
-                            fset1 = mv.read(
-                                grib_dir
-                                + str(day_fc.year)
-                                + "/fluxes_"
-                                + str(cfg.EXPVER[e]) #fluxes file names contain experiment
-                                + "_"
-                                + str(day_fc.year)
-                                + "%02d" % (day_fc.month)
-                                #+ "%02d" % (day_fc.day) #fluxes file names have no day
-                                #+ "%02d" % (day_fc.hour) #fluxes file names have no hour
-                                #+ ".grib" #fluxes files do not have the extension
-                            )
-                            print("\n... read fluxes file")
-
                             file_lh=fset1["slhf"]
-                            print("... selected slhf from file")
+                            print("... selected sshf and slhf from file")
                             coords=[lat,lon] #that's a list of pairs (lat,lon)
                             #print(coords)
                             #print(d)
-                            data_series_LH.loc[d, :, :] = mv.nearest_gridpoint( 
+
+
+                            data_series_SH = mv.nearest_gridpoint( #returns numpy array of shape (number of measurements,number of stations)
+                                file_sh,lat,lon
+                            )
+                            data_series_LH = mv.nearest_gridpoint( #returns numpy array of shape (number of measurements,number of stations)
                                 file_lh,lat,lon
-                            ).transpose()
+                            )
+                            print("... selected nearest gridpoints")
+                            
+                            ### experiment-dependent post processing ###
+                            if EXP=="0001":
+                                print("... post-processing specified for " + str(EXP))
+                                hours_avail=["00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"]
+                                #hours_avail: hours for which the model output is provided
+                                monlen=[31,29,31,30,31,30,31,31,30,31,30,31] #days per month, this is for 2020 -> needed for cutting
+                                #throw overhang away (the files for shorter months are too long and contain already the beginning of the following month)
+                                data_series_SH=data_series_SH[:monlen[idf]*26,:] #26 instead of 24 because of the two artificials zeros per day
+                                data_series_LH=data_series_LH[:monlen[idf]*26,:]
+                                print("after cutting: " + str(np.shape(data_series_SH)))
+                                #convert unit and adapt sign convention:
+                                data_series_SH=data_series_SH/3600*(-1)
+                                data_series_LH=data_series_LH/3600*(-1)
+                                #remove zero flux lines which resulted from former deaccumlation
+                                idx=(data_series_SH[:,1]==0)
+                                data_series_SH=data_series_SH[~idx,:]
+                                data_series_LH=data_series_LH[~idx,:]
+                                #prepare requested time resolution (the above data_series_XX contains all hours)
+                                for t in Time_freq:
+                                    if t not in hours_avail:
+                                        print("WARNING: You request a time for which the model does not provide any output")
+                                time_index_list=[i for i, item in enumerate(hours_avail) if item in Time_freq]
+                                data_series_SH=data_series_SH[0::12,:] #quick fix
+                                data_series_LH=data_series_LH[0::12,:]
+                                
+                            elif EXP=="hyfs":
+                                print("... post-processing specified for " + str(EXP))
+                                hours_avail=["00","06","12","18"] #hours_avail: hours for which the model output is provided
+                                #convert unit and adapt sign convention:
+                                data_series_SH=data_series_SH/(3600*6)*-1
+                                data_series_LH=data_series_LH/(3600*6)*-1
+                                #deaccumulation
+                                data_series_SH[3::4]=data_series_SH[3::4]-data_series_SH[2::4]
+                                data_series_SH[2::4]=data_series_SH[2::4]-data_series_SH[1::4]
+                                data_series_SH[1::4]=data_series_SH[1::4]-data_series_SH[0::4]
+                                data_series_LH[3::4]=data_series_LH[3::4]-data_series_LH[2::4]
+                                data_series_LH[2::4]=data_series_LH[2::4]-data_series_LH[1::4]
+                                data_series_LH[1::4]=data_series_LH[1::4]-data_series_LH[0::4]
+                                #prepare requested time resolution (the above data_series_XX contains all hours)
+                                for t in Time_freq:
+                                    if t not in hours_avail:
+                                        print("WARNING: You request a time for which the model does not provide any output")
+                                time_index_list=[i for i, item in enumerate(hours_avail) if item in Time_freq]
+                                data_series_SH=data_series_SH[0::2,:] #quick fix
+                                data_series_LH=data_series_LH[0::2,:]
 
-                            print("... selected nearest gridpoint (slhf)")
+                            else:
+                                print("WARNING: you use an experiment for which no special post-processing is defined")
 
-                            data_series_SH.loc[d, :, :].fillna(1.7e38)
 
-                    for lat_lon in range(len(lat)): # not adapted...
-                        if cfg.pre_process_SH:
+                            #concatenate of all files
+                            nl2=np.shape(data_series_SH)[0]
+                            data_series_fluxes[nl:(nl+nl2),:,0]=data_series_SH
+                            data_series_fluxes[nl:(nl+nl2),:,1]=data_series_LH
+                            nl=nl+nl2
+
+
+
+                    ### write in new output file .dat ###
+                    for lat_lon in range(len(lat)):
+                        if cfg.pre_process_fluxes:
                             filename = (
                                 preprocessed_dir
                                 + "/"
                                 + str(yr)
-                                + "/SM_"
+                                + "/fluxes_"
                                 + "%.4f" % float(lat[lat_lon])
                                 + ","
                                 + "%.4f" % float(lon[lat_lon])
                                 + ".dat"
                             )
-
-                            data_series_SM.loc[:, lat_lon, :].to_pandas().round(
+                            data_series_fluxes.loc[:, lat_lon, :].to_pandas().round(
                                 6
                             ).to_csv(
-                                filename, sep=" ", header=False, date_format="%Y%m%d%H"
-                            )
-
-                        if cfg.pre_process_ST:
-                            filename_ST = (
-                                preprocessed_dir
-                                + "/"
-                                + str(yr)
-                                + "/ST_"
-                                + "%.4f" % float(lat[lat_lon])
-                                + ","
-                                + "%.4f" % float(lon[lat_lon])
-                                + ".dat"
-                            )
-                            data_series_ST.loc[:, lat_lon, :].to_pandas().round(
-                                6
-                            ).to_csv(
-                                filename_ST,
+                                filename,
                                 sep=" ",
                                 header=False,
                                 date_format="%Y%m%d%H",
                             )
+                            
+
+
