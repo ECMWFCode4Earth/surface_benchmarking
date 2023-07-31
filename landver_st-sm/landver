@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+"""
+landver - a validation tool for land
+"""
+import Common_functions as util
+from sys import argv
+import LANDVER_pre
+import LANDVER
+
+
+def landver_main():
+    parser = util.get_parser(__doc__)
+    args = parser.parse_args(argv[1:])
+    cfg = util.get_configuration(args.options_file)
+
+    print(cfg)
+
+    #  Preprocess soil moisture and soil temperature data:
+    LANDVER_pre.preprocessData(cfg)
+
+    for land_type in cfg.land_classes:
+
+        for val_times in cfg.validation_times:
+
+          df = None
+
+          #  Validate soil moisture
+          if cfg.validate_SM:
+            df = LANDVER.in_situ_validation(cfg, "SM", val_times, land_type, df)
+
+          #    #  Validate soil temperature
+          if cfg.validate_ST:
+            df = LANDVER.in_situ_validation(cfg, "ST", val_times, land_type, df)
+
+          util.web_create(cfg, val_times, land_type, df)
+
+
+if __name__ == "__main__":
+    landver_main()
