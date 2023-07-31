@@ -4,3 +4,8 @@ Validation of soil moisture and soil temperature is crucial for Numerical Weathe
 
 Details: https://github.com/ECMWFCode4Earth/challenges_2023/issues/12
 
+## Repository Structure
+- landver_code.zip: original version of landver for soil temperature and soil moisture
+- landver_st-sm: contains unzipped python code of landver for soil temperature and soil moisture
+- landver_fluxes: adapting landver for surface heat fluxes
+
