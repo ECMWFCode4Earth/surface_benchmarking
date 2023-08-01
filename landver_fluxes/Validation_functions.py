@@ -234,7 +234,8 @@ def trapezoidal_method(depths, in_situ_obs):
 def insitu_df_to_numeric(
     Data_dir, Yr, Network, Layer, Lat, Lon, Var_type, flag_type, ST_qc=False
 ):
-
+    """reads in the preprocessed insitu data in python binary format"""
+    print(Var_type)
     Insitu_yr = pd.read_pickle(
         Data_dir
         + "/"
@@ -242,15 +243,22 @@ def insitu_df_to_numeric(
         + "/"
         + Network
         + "_"
-        + "%.2f" % (Layer)
+        #+ "%.2f" % (Layer) #no layer in fluxes file names
+        #+ "_"
+        + str(Lat)
         + "_"
-        + Lat
-        + "_"
-        + Lon
+        + str(Lon)
         + "_obs_"
         + str(Yr)
-    )[Var_type]
-
+    )
+    if Var_type=="SH":
+        Insitu_yr=Insitu_yr["H_CORR"]
+    elif Var_type=="LH":
+        Insitu_yr=Insitu_yr["LE_CORR"]
+    else:
+        Insitu_yr=Insitu_yr[Var_type]
+    
+    
     Insitu_yr_flag = pd.read_pickle(
         Data_dir
         + "/"
@@ -258,15 +266,21 @@ def insitu_df_to_numeric(
         + "/"
         + Network
         + "_"
-        + "%.2f" % (Layer)
-        + "_"
+        #+ "%.2f" % (Layer) #no layer
+        #+ "_"
         + Lat
         + "_"
         + Lon
         + "_obs_"
         + str(Yr)
-    )[flag_type]
-
+    )
+    if Var_type=="SH": #not necessary since there are not flags
+        Insitu_yr_flag=Insitu_yr_flag["H_CORR"]
+    elif Var_type=="LH":
+        Insitu_yr_flag=Insitu_yr_flag["LE_CORR"]
+    else:
+        Insitu_yr_flag=Insitu_yr_flag[flag_type]
+    
     return Insitu_yr, Insitu_yr_flag
 
 
@@ -351,6 +365,7 @@ def read_and_rescale_insitu_data(
     int_plus = None
     int_minus = None
 
+    print(data_range)
     Data_df_layer = pd.DataFrame(pl.empty((data_range.size, len(depths))), data_range)
     if (var_type == "SM") and ST_quality_control:
         ST_df_layer = pd.DataFrame(pl.empty((data_range.size, len(depths))), data_range)
@@ -413,6 +428,45 @@ def read_and_rescale_insitu_data(
                 except:
                     Data_df_layer.loc[str(yr), l] = pl.nan
                     continue
+
+            elif var_type == "SH":
+                try:
+                    insitu_yr, insitu_yr_flag = insitu_df_to_numeric(
+                        data_dir,
+                        yr,
+                        network,
+                        layer,
+                        lat,
+                        lon,
+                        var_type,
+                        var_type,
+                        False
+                    )
+                    #insitu_yr[insitu_yr_flag != "G"] = pl.nan
+                except:
+                    print("except")
+                    Data_df_layer.loc[str(yr), l] = pl.nan
+                    continue
+
+            elif var_type == "LH":
+                try:
+                    insitu_yr, insitu_yr_flag = insitu_df_to_numeric(
+                        data_dir,
+                        yr,
+                        network,
+                        layer,
+                        lat,
+                        lon,
+                        var_type,
+                        var_type,
+                        False
+                    )
+                    #insitu_yr[insitu_yr_flag != "G"] = pl.nan
+                except:
+                    print("except")
+                    Data_df_layer.loc[str(yr), l] = pl.nan
+                    continue
+                
 
             start, end = define_start_end(yr, data_range, years)
             try:

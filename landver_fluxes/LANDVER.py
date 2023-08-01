@@ -189,7 +189,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
             ensure_dir(time_series_dir_net)
 
             preprocessed_in_situ_dir = cfg.in_situ_dir + "/" + network
-            #depths, analysis_depths = ldasv.network_SM_depths(network) #just one here "surface" ... not needed?
+            depths, analysis_depths = [0.0], [0.0] #ldasv.network_SM_depths(network) #just one here "surface" ... not needed?
 
             for yr in years.year:
                 print(yr)
@@ -598,30 +598,50 @@ def in_situ_validation(cfg, var, times, land_type, df):
                     print(insitu_df)
                     print(analysis_df)
 
-                    """
+                    
                     if layer == "Surface":
                         insitu_depths = [depths[0]]
                         an_depths = [analysis_depths[0]]
                     elif layer == "Rootzone":
                         insitu_depths = depths
-                        an_depths = analysis_depths"""
+                        an_depths = analysis_depths
 
 
                     #test
                     print("test function")
-                    print(preprocessed_in_situ_dir)
-                    insitu_df, max_insitu, min_insitu = ldasv.read_fluxes_insitu(
+                    #print(preprocessed_in_situ_dir)
+                    #insitu_df, max_insitu, min_insitu = ldasv.read_fluxes_insitu(
+                    #    var,
+                    #    preprocessed_in_situ_dir,
+                    #    years.year,
+                    #    network,
+                    #    lat_insitu,
+                    #    lon_insitu,
+                    #    data_range,
+                    #    cfg.daily_obs_time_average)
+
+                    #print(insitu_df)
+                    (
+                        insitu_df,
+                        ST_insitu_df,
+                        max_insitu,
+                        min_insitu,
+                    ) = ldasv.read_and_rescale_insitu_data(
                         var,
                         preprocessed_in_situ_dir,
                         years.year,
                         network,
                         lat_insitu,
                         lon_insitu,
+                        insitu_depths,
                         data_range,
-                        cfg.daily_obs_time_average)
-
-                    print(insitu_df)
+                        cfg.daily_obs_time_average
+                    )
                     print("end test")
+                    
+                    print(insitu_df)
+                    
+
                     ### read (and rescale) preprocessed insitu and analysis data
                     if (var == "SM") and (cfg.ST_quality_control):
                         ST_insitu_df = pd.DataFrame(
@@ -641,6 +661,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         network,
                         lat_insitu,
                         lon_insitu,
+                        insitu_depths,
                         data_range,
                         cfg.daily_obs_time_average
                     )

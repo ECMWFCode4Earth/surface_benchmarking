@@ -116,8 +116,8 @@ class LDAS_config(object):
         self.validation_layer = [
             "Surface"
         ]  # just surface
-        self.SH_quality_control = False  # Screen SM where soil temperature less than specified value ST_QC_threshold #not yet adapted
-        self.SH_QC_threshold = (
+        self.ST_quality_control = False  # Screen SM where soil temperature less than specified value ST_QC_threshold #not yet adapted
+        self.ST_QC_threshold = (
             277.15  # Minimum soil temperature threshold (degrees Kelvin)
         )
         # Screen stations where orography difference between in situ station and analysis grid exceeds specified threshold:
