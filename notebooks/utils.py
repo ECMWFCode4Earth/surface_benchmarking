@@ -9,6 +9,7 @@ import pytz
 import datetime
 import timezonefinder
 from timezonefinder import TimezoneFinder
+import warnings
 
 
 def utc_offset(lat,lon,utc_timestring="2023-08-08 10:00:00"):
@@ -56,8 +57,19 @@ def calc_acc_mon(mod,obs):
 def mean_diurnal_cycle(vec):
     """calculates mean diurnal cycle of vec"""
     cycle=np.empty((24))
+    warnings.filterwarnings("ignore")
     for i in range(24):
         cycle[i]=np.nanmean(vec[i::24])
+    return(cycle)
+
+def mean_seasonal_cycle(vec,ndays=366):
+    """calculates mean seasonal cycle of vec"""
+    cycle=np.empty((12))
+    res=int(len(vec)/ndays)
+    monlen=[31,29,31,30,31,30,31,31,30,31,30,31]
+    warnings.filterwarnings("ignore")
+    for i in range(12):
+        cycle[i]=np.nanmean(vec[sum(monlen[:(i-1)]*res):sum(monlen[:i]*res)])
     return(cycle)
 
 def obs_daily_av(sh_obs,lh_obs,n=366):
