@@ -66,12 +66,30 @@ def mean_seasonal_cycle(vec,ndays=366):
     """calculates mean seasonal cycle of vec"""
     cycle=np.empty((12))
     res=int(len(vec)/ndays)
-    monlen=[31,29,31,30,31,30,31,31,30,31,30,31]
+    if ndays==366:
+        monlen=[0,31,29,31,30,31,30,31,31,30,31,30,31]
+    else:
+        monlen=[0,31,28,31,30,31,30,31,31,30,31,30,31]
     warnings.filterwarnings("ignore")
     for i in range(12):
-        cycle[i]=np.nanmean(vec[sum(monlen[:(i-1)]*res):sum(monlen[:i]*res)])
+        cycle[i]=np.nanmean(vec[sum(monlen[:(i)]*res):sum(monlen[:i+1]*res)])
     return(cycle)
 
+def mean_seasonal_diurnal_cycle(vec,ndays=366,off=18):
+    """calculates mean seasonal and diurnal cycle of vec as matrix with dimension (month,hour)=(12,24)"""
+    cycle=np.empty((12,24))
+    res=int(len(vec)/ndays)
+    if ndays==366:
+        monlen=[31,29,31,30,31,30,31,31,30,31,30,31]
+    else:
+        monlen=[31,28,31,30,31,30,31,31,30,31,30,31]
+    warnings.filterwarnings("ignore")
+    for i in range(12):
+    	for j in range(24):
+            tmp=vec[sum(monlen[:(i)]*res):sum(monlen[:i+1]*res)] #select, month
+            cycle[i,j]=np.nanmean(tmp[off+j::24]) #average per hour
+    return(cycle)
+    
 def obs_daily_av(sh_obs,lh_obs,n=366):
     """calculates daily average flux for icos data (half-hourly, every second value considered)"""
     sh_av_obs=np.zeros(n)
