@@ -91,6 +91,13 @@ def mean_seasonal_diurnal_cycle(vec,ndays=366,off=18):
             cycle[i,j]=np.nanmean(tmp[off+j::24]) #average per hour
     return(cycle)
     
+
+def daily_av(vec,res=4,n=366):
+    out=np.empty(n)
+    for i in range(0,np.shape(vec)[0]-res,res):
+        out[int((i+res)/res)]=np.nanmean(vec[i:i+res-1])
+    return(out)
+
 def obs_daily_av(sh_obs,lh_obs,n=366):
     """calculates daily average flux for icos data (half-hourly, every second value considered)"""
     sh_av_obs=np.zeros(n)
@@ -118,7 +125,25 @@ def deacc_24h(mod):
     for i in reversed(range(23)):
         mod[i::24]=mod[i::24]-mod[i-1::24]
     return(mod)
-    
+
+def deacc_hyfs(mod):
+    """deaccumulates 6-hourly accumulated fluxes, as in hyfs"""
+    mod[3::4]=mod[3::4]-mod[2::4]
+    mod[2::4]=mod[2::4]-mod[1::4]
+    mod[1::4]=mod[1::4]-mod[0::4]
+    return(mod) 
+
+def acc_deacc_6h(obs,res=24):
+    """accumulates hourly (if res==24) obs data and deaccumulates them on 6 h
+    -> to make obs data comparable with hyfs"""
+    obs=np.array(obs)
+    obs_out=np.empty(366*4)
+    obs_out[0::4]=obs[0::res]
+    obs_out[1::4]=1/6*(obs[1::res]+obs[2::res]+obs[3::res]+obs[4::res]+obs[5::res]+obs[6::res])
+    obs_out[2::4]=1/6*(obs[7::res]+obs[8::res]+obs[9::res]+obs[10::res]+obs[11::res]+obs[12::res])
+    obs_out[3::4]=1/6*(obs[13::res]+obs[14::res]+obs[15::res]+obs[16::res]+obs[17::res]+obs[18::res])
+    return(obs_out)
+
 def acc_deacc(mod):
     """returns the 12 UTC value corresponding to accumulating 1h values and deacc on 6h"""
     mod12=mod[7::24]+mod[8::24]+mod[9::24]+mod[10::24]+mod[11::24]+mod[12::24]
