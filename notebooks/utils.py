@@ -67,12 +67,13 @@ def mean_seasonal_cycle(vec,ndays=366):
     cycle=np.empty((12))
     res=int(len(vec)/ndays)
     if ndays==366:
-        monlen=[0,31,29,31,30,31,30,31,31,30,31,30,31]
+        monlen=[31,29,31,30,31,30,31,31,30,31,30,31]
     else:
-        monlen=[0,31,28,31,30,31,30,31,31,30,31,30,31]
+        monlen=[31,28,31,30,31,30,31,31,30,31,30,31]
     warnings.filterwarnings("ignore")
     for i in range(12):
-        cycle[i]=np.nanmean(vec[sum(monlen[:(i)]*res):sum(monlen[:i+1]*res)])
+        #print("from "+str(sum(monlen[:i]))+" to " + str(sum(monlen[:i+1])))
+        cycle[i]=np.nanmean(vec[sum(monlen[:i])*res:sum(monlen[:i+1])*res])
     return(cycle)
 
 def mean_seasonal_diurnal_cycle(vec,ndays=366,off=18):
