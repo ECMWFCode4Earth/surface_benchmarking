@@ -86,7 +86,7 @@ def mean_seasonal_diurnal_cycle(vec,ndays=366,off=18):
     warnings.filterwarnings("ignore")
     for i in range(12):
     	for j in range(24):
-            tmp=vec[sum(monlen[:(i)]*res):sum(monlen[:i+1]*res)] #select, month
+            tmp=vec[sum(monlen[:(i)]*res):sum(monlen[:i+1]*res)] #select month
             cycle[i,j]=np.nanmean(tmp[off+j::24]) #average per hour
     return(cycle)
     
