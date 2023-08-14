@@ -595,9 +595,6 @@ def in_situ_validation(cfg, var, times, land_type, df):
                     insitu_df = pd.DataFrame(pl.empty((data_range.size)), data_range)
                     analysis_df = pd.DataFrame(pl.empty((data_range.size)), data_range)
 
-                    print(insitu_df)
-                    print(analysis_df)
-
                     
                     if layer == "Surface":
                         insitu_depths = [depths[0]]
@@ -607,20 +604,6 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         an_depths = analysis_depths
 
 
-                    #test
-                    print("test function")
-                    #print(preprocessed_in_situ_dir)
-                    #insitu_df, max_insitu, min_insitu = ldasv.read_fluxes_insitu(
-                    #    var,
-                    #    preprocessed_in_situ_dir,
-                    #    years.year,
-                    #    network,
-                    #    lat_insitu,
-                    #    lon_insitu,
-                    #    data_range,
-                    #    cfg.daily_obs_time_average)
-
-                    #print(insitu_df)
                     (
                         insitu_df,
                         ST_insitu_df,
@@ -637,11 +620,8 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         data_range,
                         cfg.daily_obs_time_average
                     )
-                    print("end test")
-                    
+                                       
                     print(insitu_df)
-                    
-
                     ### read (and rescale) preprocessed insitu and analysis data
                     if (var == "SM") and (cfg.ST_quality_control):
                         ST_insitu_df = pd.DataFrame(
@@ -665,7 +645,6 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         data_range,
                         cfg.daily_obs_time_average
                     )
-                    #remark: even if the argument of the functions is "years", always just one year is requested
 
                     analysis_df, ST_df = ldasv.read_and_rescale_analysis_data(
                         var,
@@ -682,7 +661,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         cfg.ST_ML10[e],
                         cfg.ST_QC_threshold,
                     )
-
+                    print("after reading in analysis")
                     insitu_df.loc[:][pl.isnan(analysis_df.loc[:])] = pl.nan
 
                     ### orography ### (not yet used for fluxes)
@@ -903,7 +882,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
                         # Calculate seasonal scores
                         for season in slist:
-
+                            print("loop season")
                             analysis_df_s = analysis_df[s_index == season]
                             insitu_df_s = insitu_df[s_index == season]
                             analysis_ano_s = analysis_ano[s_index == season]
@@ -964,7 +943,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
                         # Calculate annual scores
                         for yr in years.year:
-
+                            print("loop years")
                             analysis_df_a = analysis_df[str(yr)]
                             insitu_df_a = insitu_df[str(yr)]
                             analysis_ano_a = analysis_ano[
@@ -1515,7 +1494,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                     layer,
                     start_period,
                     end_period,
-                    cfg.SM_units,
+                    cfg.fluxes_units,
                     cfg.table_format,
                     EXP,
                     "annual",
@@ -1538,7 +1517,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                     years.year,
                     years.year,
                     "annual",
-                    cfg.SM_units,
+                    cfg.fluxes_units,
                     start_period,
                     end_period,
                     times,
@@ -1557,7 +1536,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                     slist,
                     years.year,
                     "seasonal",
-                    cfg.SM_units,
+                    cfg.fluxes_units,
                     start_period,
                     end_period,
                     times,
@@ -1583,7 +1562,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                     layer,
                     start_period,
                     end_period,
-                    cfg.SM_units,
+                    cfg.fluxes_units,
                     cfg.table_format,
                     EXP,
                     "seasonal",

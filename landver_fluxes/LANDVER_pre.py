@@ -387,7 +387,7 @@ def preprocessData(cfg):
                     annual_data_range = data_range[data_range.year == yr]
                     print("length of annual_data_range: " + str(len(annual_data_range)))
 
-                    if cfg.pre_process_fluxes:
+                    if cfg.pre_process_SH or cfg.pre_procrocess_LH:
                         data_series_fluxes = xr.DataArray(
                             pl.empty((annual_data_range.size, len(lat), 2)), #2 instead of 4, since we have sh and lh (just sfc level)
                             coords=[annual_data_range, range(len(lat)), range(2)],
@@ -405,7 +405,7 @@ def preprocessData(cfg):
 
                         #day_fc = d - pd.Timedelta(int(cfg.STEP[e]), "h")
                         #print(n,e,yr,d)
-                        if cfg.pre_process_SH or cfg.pre_process_LH or cfg.pre_process_fluxes:
+                        if cfg.pre_process_SH or cfg.pre_process_LH:
                             fset1 = mv.read(f)
                             #fset1 = mv.read( #this works as well
                             #    grib_dir
@@ -497,12 +497,14 @@ def preprocessData(cfg):
 
                     ### write in new output file .dat ###
                     for lat_lon in range(len(lat)):
-                        if cfg.pre_process_fluxes:
+                        if cfg.pre_process_SH or cfg.pre_process_LH:
                             filename = (
                                 preprocessed_dir
                                 + "/"
                                 + str(yr)
-                                + "/fluxes_"
+                                + "/"
+                                + "fluxes"
+                                + "_"
                                 + "%.4f" % float(lat[lat_lon])
                                 + ","
                                 + "%.4f" % float(lon[lat_lon])

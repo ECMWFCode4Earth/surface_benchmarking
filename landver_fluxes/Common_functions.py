@@ -89,16 +89,11 @@ class LDAS_config(object):
         #self.extract_SH = False  # Extract grib files from MARS (required for preprocessing) #not yet implemented for fluxes
         #self.extract_LH = False  # Extract grib files from MARS (required for preprocessing)
         self.pre_process_SH = (
-           False  # Preprocess sensible heat flux (required for validation)
+            False  # Preprocess sensible heat flux (required for validation)
         )
         self.pre_process_LH = ( 
             False # Preprocess latent heat flux (required for validation)
         )
-        self.pre_process_fluxes = ( 
-            False # Preprocess fluxes (SH and LH together since they are in the same file)
-        )
-        #still to be decided: pre_processing separately or together?
-
         self.validate_SH = True  # Validate sensible heat flux
         self.validate_LH = True  # Validate latent heat flux
 
@@ -113,6 +108,7 @@ class LDAS_config(object):
         )
         self.SH_units = "J"  # units can be "J" for J/m^2 or "W" for W/m^2
         self.LH_units = "J"
+        self.fluxes_units = "J"
         self.validation_layer = [
             "Surface"
         ]  # just surface

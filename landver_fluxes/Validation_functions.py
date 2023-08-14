@@ -235,7 +235,6 @@ def insitu_df_to_numeric(
     Data_dir, Yr, Network, Layer, Lat, Lon, Var_type, flag_type, ST_qc=False
 ):
     """reads in the preprocessed insitu data in python binary format"""
-    print(Var_type)
     Insitu_yr = pd.read_pickle(
         Data_dir
         + "/"
@@ -365,7 +364,6 @@ def read_and_rescale_insitu_data(
     int_plus = None
     int_minus = None
 
-    print(data_range)
     Data_df_layer = pd.DataFrame(pl.empty((data_range.size, len(depths))), data_range)
     if (var_type == "SM") and ST_quality_control:
         ST_df_layer = pd.DataFrame(pl.empty((data_range.size, len(depths))), data_range)
@@ -444,7 +442,6 @@ def read_and_rescale_insitu_data(
                     )
                     #insitu_yr[insitu_yr_flag != "G"] = pl.nan
                 except:
-                    print("except")
                     Data_df_layer.loc[str(yr), l] = pl.nan
                     continue
 
@@ -463,7 +460,6 @@ def read_and_rescale_insitu_data(
                     )
                     #insitu_yr[insitu_yr_flag != "G"] = pl.nan
                 except:
-                    print("except")
                     Data_df_layer.loc[str(yr), l] = pl.nan
                     continue
                 
@@ -560,12 +556,13 @@ def read_and_rescale_analysis_data(
     for yr in years:
 
         try:
+            print(analysis_dir)
             analysis_yr = pd.read_csv(
                 analysis_dir
                 + "/"
                 + str(yr)
                 + "/"
-                + var_type
+                + "fluxes" #var_type #TODO do it separately for SH and LH?
                 + "_"
                 + lat
                 + ","
@@ -629,6 +626,12 @@ def read_and_rescale_analysis_data(
             Data_df_layer.loc[:, :][Data_df_layer.loc[:, l] > 1.0] = pl.nan
         elif var_type == "ST":
             Data_df_layer.loc[:, :][Data_df_layer.loc[:, 0] > 1000.0] = pl.nan
+        elif var_type == "SH":
+            Data_df_layer.loc[:, :][Data_df_layer.loc[:, l] <= -400] = pl.nan
+            Data_df_layer.loc[:, :][Data_df_layer.loc[:, l] > 900] = pl.nan
+        elif var_type == "LH":
+            Data_df_layer.loc[:, :][Data_df_layer.loc[:, l] <= -400] = pl.nan
+            Data_df_layer.loc[:, :][Data_df_layer.loc[:, l] > 900] = pl.nan
 
         if (var_type == "SM") and ST_quality_control:
             Data_df_layer.loc[:, :][
@@ -638,12 +641,17 @@ def read_and_rescale_analysis_data(
             ST_df_layer.loc[:, l] = ST_df_layer.loc[:, l] * layer
 
         Data_df_layer.loc[:, :][pl.isnan(Data_df_layer.loc[:, 0])] = pl.nan
-        Data_df_layer.loc[:, l] = Data_df_layer.loc[:, l] * layer
+        if var_type == "SM" or var_type == "ST":
+            Data_df_layer.loc[:, l] = Data_df_layer.loc[:, l] * layer
 
+        print("Data_df_layer")
+        print(Data_df_layer)
     if var_type == "SM":
         Data_analysis = Data_df_layer.sum(skipna=False, axis=1) / sum(depths)
     elif var_type == "ST":
         Data_analysis = Data_df_layer.sum(skipna=False, axis=1) / sum(depths) - 273.15
+    else:
+        Data_analysis = Data_df_layer.sum(skipna=False, axis=1)
 
     # Rescale analysis SM to produce soil water index:
     if (var_type == "SM") and Rescale_data:
@@ -661,41 +669,6 @@ def numericalSort(value):
     parts = numbers.split(value)
     return parts
 
-
-def read_fluxes_insitu(
-    var_type,
-    data_dir,
-    years,
-    network,
-    lat,
-    lon,
-    data_range,
-    daily_obs_time_average=False):
-    """
-    reads the insitu data per network and station, but possibly several years
-    @return flux_data_insitu, max_insitu, min_insitu
-    """
-    #print(network)
-    #print(lat)
-    #print(lon)
-    for yr in years:
-        print(data_dir+"/"+str(yr)+"/"+network+"*"+str(lat)+"_"+str(lon)+"*")
-        file=glob.glob(data_dir+"/"+str(int(yr))+"/"+network+"*"+str(lat)+"_"+str(lon)+"*")
-    
-    print("file:" + file[0])
-    dat=pd.read_pickle(file[0])
-    if var_type=="SH":
-        tmp=dat["H_CORR"]
-    elif var_type=="LH":
-        tmp=dat["LE_CORR"]
-    else:
-        print("WARNING: you try to request an unknown flux type")
-
-    return(tmp,np.nanmax(tmp),np.nanmin(tmp))
-
-def read_fluxes_analysis():
-    """
-    """
 
 ###############################################################################
 # Plotting functions:
