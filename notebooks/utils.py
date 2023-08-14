@@ -23,7 +23,7 @@ def utc_offset(lat,lon,utc_timestring="2023-08-08 10:00:00"):
     timezone=pytz.timezone(timezone_str)
     dt = datetime.datetime.strptime(utc_timestring, "%Y-%m-%d %H:%M:%S")
     deltat=timezone.utcoffset(dt) #in seconds
-    return(deltat.total_seconds()/3600) #in hours
+    return(int(deltat.total_seconds()/3600)) #in hours
 
 def calc_acc(mod,obs,res=1,nwindow=15):
     """calculates anomaly correlation coefficient (= correlation coefficient after removing seasonal cycle)
@@ -148,6 +148,15 @@ def acc_deacc(mod):
     """returns the 12 UTC value corresponding to accumulating 1h values and deacc on 6h"""
     mod12=mod[7::24]+mod[8::24]+mod[9::24]+mod[10::24]+mod[11::24]+mod[12::24]
     return(mod12/6)
+
+def average_stations(field,lim=400):
+    """average a matrix with dimension (month, hour, stations) over stations (i.e., third dimension) resulting in a matrix with dimension (month, hour)"""
+    new=np.empty((12,24))
+    field[np.abs(field)>lim]='NaN'
+    for i in range(24):
+        for j in range(12):
+            new[j,i]=np.nanmean(field[j,i,:])
+    return(new)
 
 def abline(slope, intercept,col="gray",lty="--"):
     """plots abline from slope and intercept as in R"""
