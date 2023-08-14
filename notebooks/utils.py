@@ -91,11 +91,11 @@ def mean_seasonal_diurnal_cycle(vec,ndays=366,off=18):
             cycle[i,j]=np.nanmean(tmp[off+j::24]) #average per hour
     return(cycle)
     
-
 def daily_av(vec,res=4,n=366):
+    """calculates daily average value of vec, with res = #measurements/model outputs per day and n = #days"""
     out=np.empty(n)
     for i in range(0,np.shape(vec)[0]-res,res):
-        out[int((i+res)/res)]=np.nanmean(vec[i:i+res-1])
+        out[int(np.floor((i-1+res)/res))]=np.nanmean(vec[i:i+res])
     return(out)
 
 def obs_daily_av(sh_obs,lh_obs,n=366):
