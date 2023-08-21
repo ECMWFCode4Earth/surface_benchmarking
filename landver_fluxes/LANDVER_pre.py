@@ -459,8 +459,18 @@ def preprocessData(cfg):
                                     if t not in hours_avail:
                                         print("WARNING: You request a time for which the model does not provide any output")
                                 time_index_list=[i for i, item in enumerate(hours_avail) if item in Time_freq]
-                                data_series_SH=data_series_SH[0::12,:] #quick fix
-                                data_series_LH=data_series_LH[0::12,:]
+                                #accumulate on 6h for 00 and 12 utc
+                                data_series_SH_new=data_series_SH[0::12]
+                                data_series_SH_new[0::2]=1/6*(data_series_SH[19::24,:]+data_series_SH[20::24,:]+data_series_SH[21::24,:]+data_series_SH[22::24,:]+data_series_SH[23::24,:]+data_series_SH[0::24,:])
+                                data_series_SH_new[1::2]=1/6*(data_series_SH[7::24,:]+data_series_SH[8::24,:]+data_series_SH[9::24,:]+data_series_SH[10::24,:]+data_series_SH[11::24,:]+data_series_SH[12::24,:])
+                                data_series_SH=data_series_SH_new
+                                data_series_LH_new=data_series_LH[0::12,:]
+                                data_series_LH_new[0::2]=1/6*(data_series_LH[19::24,:]+data_series_LH[20::24,:]+data_series_LH[21::24,:]+data_series_LH[22::24,:]+data_series_LH[23::24,:]+data_series_LH[0::24,:])
+                                data_series_LH_new[1::2]=1/6*(data_series_LH[7::24,:]+data_series_LH[8::24,:]+data_series_LH[9::24,:]+data_series_LH[10::24,:]+data_series_LH[11::24,:]+data_series_LH[12::24,:])
+                                data_series_LH=data_series_LH_new
+                                #data_series_SH=data_series_SH[0::12,:] #quick fix
+                                #data_series_LH=data_series_LH[0::12,:]
+                                
                                 
                             elif EXP=="hyfs":
                                 print("... post-processing specified for " + str(EXP))

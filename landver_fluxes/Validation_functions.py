@@ -782,7 +782,8 @@ def plot_time_series(
 
     analysis.plot(ax=axes, linewidth=1, linestyle="--", color="r", label=exp_cur)
 
-    insitu.plot(ax=axes, linewidth=1, marker="o", color="b", label="In situ")
+    #insitu.plot(ax=axes, linewidth=1, marker="o", color="b", label="In situ")
+    insitu.plot(ax=axes, marker="o", color="b", label="In situ")
 
     axes.set_title(var_type + " at:" + lat_val + ", lon=" + lon_val, fontsize=10)
     if (var_type == "SM") and SM_rescale:
@@ -791,6 +792,10 @@ def plot_time_series(
         axes.set_ylabel("SM ($m^3/m^3$)")
     elif var_type == "ST":
         axes.set_ylabel("Temperature  ($^{\circ}C$)")
+    elif var_type == "SH":
+        axes.set_ylabel("SH  ($W/m^2$)")
+    elif var_type == "LH":
+        axes.set_ylabel("LH  ($W/m^2$)")
 
     axes.set_xlabel("Time")
 

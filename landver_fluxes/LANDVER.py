@@ -742,6 +742,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         24 / np.int(time_interval)
                     )  # first calculate frequency of data per day
                     for yy_len in range(14 * ap, len(insitu_df.loc[:]) - 14 * ap):
+                        print("...calculate ACC")
                         dd = insitu_df.loc[:].values[
                             yy_len - 15 * ap : yy_len + 15 * ap
                         ][
@@ -770,26 +771,27 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
                     
 
-                    if (var == "SM") and cfg.ST_quality_control:
-                        for yr in years.year:
-                            if (
-                                len(
-                                    ST_insitu_df[str(yr)][
-                                        ST_insitu_df[str(yr)]
-                                        > (cfg.ST_QC_threshold - 273.15)
-                                    ]
-                                )
-                                == 0
-                            ) and (
-                                len(ST_insitu_df[str(yr)][ST_insitu_df[str(yr)] > 0.0])
-                                > 0
-                            ):
-                                frozen_conditions[str(yr)].append("0")
-                            else:
-                                frozen_conditions[str(yr)].append("1")
+                    #if (var == "SM") and cfg.ST_quality_control:
+                    #    for yr in years.year:
+                    #        if (
+                    #            len(
+                    #                ST_insitu_df[str(yr)][
+                    #                    ST_insitu_df[str(yr)]
+                    #                    > (cfg.ST_QC_threshold - 273.15)
+                    #                ]
+                    #            )
+                    #            == 0
+                    #        ) and (
+                    #            len(ST_insitu_df[str(yr)][ST_insitu_df[str(yr)] > 0.0])
+                    #            > 0
+                    #        ):
+                    #            frozen_conditions[str(yr)].append("0")
+                    #        else:
+                    #            frozen_conditions[str(yr)].append("1")
 
                     # Calculate stats where a reasonable amount of data is available:
                     if len(array[1]) > cfg.min_obs:
+                        print("...calculate scores (enough obses exist)")
 
                         # Calculate scores over the entire period
                         bias_val, rmsd_val, corr_val, ano_corr_val = (
@@ -800,15 +802,15 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         )
                         std_an_val = np.std(array[0])
                         std_obs_val = np.std(array[1])
-                        if (
-                            (var == "SM")
-                            and (cfg.SM_units == "Volumetric")
-                            and cfg.Rescale_data
-                        ):
-                            rmsd_val = rmsd_val * (max_insitu - min_insitu)
-                            bias_val = bias_val * (max_insitu - min_insitu)
-                            std_an_val = std_an_val * (max_insitu - min_insitu)
-                            std_obs_val = std_obs_val * (max_insitu - min_insitu)
+                        #if (
+                        #    (var == "SM")
+                        #    and (cfg.SM_units == "Volumetric")
+                        #    and cfg.Rescale_data
+                        #):
+                        #    rmsd_val = rmsd_val * (max_insitu - min_insitu)
+                        #    bias_val = bias_val * (max_insitu - min_insitu)
+                        #    std_an_val = std_an_val * (max_insitu - min_insitu)
+                        #    std_obs_val = std_obs_val * (max_insitu - min_insitu)
                         ub_rmsd_val = np.sqrt(rmsd_val ** 2 - bias_val ** 2)
                         if (array[0].size > 2) and (array_ano[0].size > 2):
                             P_val = pearsonr(array[0], array[1])[1]
@@ -817,7 +819,8 @@ def in_situ_validation(cfg, var, times, land_type, df):
                             P_val = pl.nan
                             Ano_P_val = pl.nan
 
-                        if cfg.stat_sig:
+                        if cfg.stat_sig: #check significance
+                            print("...check significance")
                             insitu_df_ano = copy.deepcopy(insitu_df)
                             analysis_df_ano = copy.deepcopy(analysis_df)
                             insitu_df_ano.loc[:] = insitu_ano
@@ -882,7 +885,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
                         # Calculate seasonal scores
                         for season in slist:
-                            print("loop season")
+                            print("...calculate scores for every season")
                             analysis_df_s = analysis_df[s_index == season]
                             insitu_df_s = insitu_df[s_index == season]
                             analysis_ano_s = analysis_ano[s_index == season]
@@ -901,15 +904,15 @@ def in_situ_validation(cfg, var, times, land_type, df):
                             )
                             std_an_val = np.std(array[0])
                             std_obs_val = np.std(array[1])
-                            if (
-                                (var == "SM")
-                                and (cfg.SM_units == "Volumetric")
-                                and cfg.Rescale_data
-                            ):
-                                rmsd_val = rmsd_val * (max_insitu - min_insitu)
-                                bias_val = bias_val * (max_insitu - min_insitu)
-                                std_an_val = std_an_val * (max_insitu - min_insitu)
-                                std_obs_val = std_obs_val * (max_insitu - min_insitu)
+                            #if (
+                            #    (var == "SM")
+                            #    and (cfg.SM_units == "Volumetric")
+                            #    and cfg.Rescale_data
+                            #):
+                            #    rmsd_val = rmsd_val * (max_insitu - min_insitu)
+                            #    bias_val = bias_val * (max_insitu - min_insitu)
+                            #    std_an_val = std_an_val * (max_insitu - min_insitu)
+                            #    std_obs_val = std_obs_val * (max_insitu - min_insitu)
                             ub_rmsd_val = np.sqrt(rmsd_val ** 2 - bias_val ** 2)
 
                             R[EXP][network + "_" + layer][season].append(corr_val)
@@ -966,15 +969,15 @@ def in_situ_validation(cfg, var, times, land_type, df):
                             )
                             std_an_val = np.std(array[0])
                             std_obs_val = np.std(array[1])
-                            if (
-                                (var == "SM")
-                                and (cfg.SM_units == "Volumetric")
-                                and cfg.Rescale_data
-                            ):
-                                rmsd_val = rmsd_val * (max_insitu - min_insitu)
-                                bias_val = bias_val * (max_insitu - min_insitu)
-                                std_an_val = std_an_val * (max_insitu - min_insitu)
-                                std_obs_val = std_obs_val * (max_insitu - min_insitu)
+                            #if (
+                            #    (var == "SM")
+                            #    and (cfg.SM_units == "Volumetric")
+                            #    and cfg.Rescale_data
+                            #):
+                            #    rmsd_val = rmsd_val * (max_insitu - min_insitu)
+                            #    bias_val = bias_val * (max_insitu - min_insitu)
+                            #    std_an_val = std_an_val * (max_insitu - min_insitu)
+                            #    std_obs_val = std_obs_val * (max_insitu - min_insitu)
                             ub_rmsd_val = np.sqrt(rmsd_val ** 2 - bias_val ** 2)
 
                             R[EXP][network + "_" + layer][str(yr)].append(corr_val)
@@ -1046,7 +1049,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                                     )
                                     
 
-                            if (var == "SM") and cfg.ST_quality_control:
+                            if (var == "SM") and cfg.ST_quality_control: #case not necessary for fluxes
 
                                 if (len(cfg.EXPVER) > 1) and (
                                     EXP != (cfg.EXPVER[-1] + "_" + cfg.CLASS[-1])
@@ -1101,7 +1104,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                                             land_type,
                                             ano_corr_val,
                                         )
-                            elif (EXP == (cfg.EXPVER[-1] + "_" + cfg.CLASS[-1])):
+                            elif (EXP == (cfg.EXPVER[-1] + "_" + cfg.CLASS[-1])): #only this for fluxes
 
                                         ldasv.plot_time_series(
                                             var,
@@ -1133,31 +1136,31 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
                 # Warn if stations do not meet quality control
 
-                if (var == "SM") and cfg.ST_quality_control:
-                    for yr in years.year:
-                        if (
-                            Data_available[network][str(yr)] == True
-                            and (Analysis_available[network][str(yr)] == True)
-                            and (
-                                sum(np.array(frozen_conditions[str(yr)][:]) == "0") > 0
-                            )
-                        ):
-                            print(
-                                "\n"
-                                + str(
-                                    sum(np.array(frozen_conditions[str(yr)][:]) == "0")
-                                )
-                                + " of "
-                                + str(len(np.array(frozen_conditions[str(yr)][:])))
-                                + " stations"
-                                + " discarded for network "
-                                + network
-                                + " for year "
-                                + str(yr)
-                                + " due to observed soil temperature consistently below threshold of "
-                                + str(cfg.ST_QC_threshold)
-                                + " K."
-                            )
+                #if (var == "SM") and cfg.ST_quality_control:
+                #    for yr in years.year:
+                #        if (
+                #            Data_available[network][str(yr)] == True
+                #            and (Analysis_available[network][str(yr)] == True)
+                #            and (
+                #                sum(np.array(frozen_conditions[str(yr)][:]) == "0") > 0
+                #            )
+                #        ):
+                #            print(
+                #                "\n"
+                #                + str(
+                #                    sum(np.array(frozen_conditions[str(yr)][:]) == "0")
+                #                )
+                #                + " of "
+                #                + str(len(np.array(frozen_conditions[str(yr)][:])))
+                #                + " stations"
+                #                + " discarded for network "
+                #                + network
+                #                + " for year "
+                #                + str(yr)
+                #                + " due to observed soil temperature consistently below threshold of "
+                #                + str(cfg.ST_QC_threshold)
+                #                + " K."
+                #            )
 
                 # Choose specific criteria for filtering scores i.e. P-Value<0.05:
                 w[EXP][network + "_" + layer]["period"] = np.where(
