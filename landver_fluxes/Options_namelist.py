@@ -3,7 +3,7 @@
 
 ################general options: 
 #-------------------------------------------------------------------------------------
-analysis_period = ['2020-01-01','2020-12-31'] #Analysis period.
+analysis_period = ['2020-01-01','2020-12-30'] #Analysis period.
 
 #Output data directory where all analysis data and results are to be stored: 
 #output_dir="/Users/dadf/landver_test_21_04_23/sfc_evaluation_out"#"/perm/rd/dadf/H14_vs_H26"

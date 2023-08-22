@@ -62,7 +62,6 @@ def in_situ_validation(cfg, var, times, land_type, df):
         )
 
     for e, EXP in enumerate([m + "_" + n for m, n in zip(cfg.EXPVER, cfg.CLASS)]):
-        print(EXP)
         # Data times
         try:
             Time_freq = cfg.TIME[e].split("/")
@@ -98,6 +97,8 @@ def in_situ_validation(cfg, var, times, land_type, df):
         if land_type != "all_land":
             land_type_codes = ldasv.land_class_lookup_table(land_type)
 
+        print("data_range")
+        print(data_range)
         # For seasonal scores:
         mlist = [[12, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]]
         slist = ["winter", "spring", "summer", "autumn"]
@@ -169,7 +170,6 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
         # Check in situ data and analysis data are present:
         for n, network in enumerate(cfg.Network):
-            print(network)
             file[network] = dict()
             file_ST[network] = dict()
             file_in_situ[network] = dict()
@@ -192,7 +192,6 @@ def in_situ_validation(cfg, var, times, land_type, df):
             depths, analysis_depths = [0.0], [0.0] #ldasv.network_SM_depths(network) #just one here "surface" ... not needed?
 
             for yr in years.year:
-                print(yr)
                 try:
                     file[network][str(yr)] = sorted( #file: list of all preprocessed file per experiment, network and year
                         glob.glob(
@@ -208,7 +207,6 @@ def in_situ_validation(cfg, var, times, land_type, df):
                 except:
                     Data_available[network][str(yr)] = False
 
-                print(preprocessed_in_situ_dir)
                 try:
                     file_in_situ[network][str(yr)] = sorted(
                         glob.glob(
@@ -223,7 +221,6 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         ),
                         key=ldasv.numericalSort,
                     )
-                    print(file_in_situ)
                     if len(file_in_situ[network][str(yr)]) < 1:
                         Data_available[network][str(yr)] = False
                     else:
@@ -258,7 +255,6 @@ def in_situ_validation(cfg, var, times, land_type, df):
                 + EXP
             )
             preprocessed_in_situ_dir = cfg.in_situ_dir + "/" + network
-            #print(preprocessed_in_situ_dir)
 
             # Loop over layers:
             for l, layer in enumerate(cfg.validation_layer):
@@ -620,7 +616,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         data_range,
                         cfg.daily_obs_time_average
                     )
-                                       
+                    print("\n--- after read_and_rescale ---")          
                     print(insitu_df)
                     ### read (and rescale) preprocessed insitu and analysis data
                     if (var == "SM") and (cfg.ST_quality_control):
@@ -742,7 +738,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         24 / np.int(time_interval)
                     )  # first calculate frequency of data per day
                     for yy_len in range(14 * ap, len(insitu_df.loc[:]) - 14 * ap):
-                        print("...calculate ACC")
+                        #print("...calculate ACC")
                         dd = insitu_df.loc[:].values[
                             yy_len - 15 * ap : yy_len + 15 * ap
                         ][
@@ -946,7 +942,6 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
                         # Calculate annual scores
                         for yr in years.year:
-                            print("loop years")
                             analysis_df_a = analysis_df[str(yr)]
                             insitu_df_a = insitu_df[str(yr)]
                             analysis_ano_a = analysis_ano[

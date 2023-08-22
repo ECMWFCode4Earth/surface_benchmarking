@@ -15,6 +15,10 @@ import cartopy.crs as ccrs
 import cartopy as cart
 import seaborn as sns
 import glob
+import pytz
+import datetime
+import timezonefinder
+from timezonefinder import TimezoneFinder
 
 filterwarnings("ignore")
 import math
@@ -273,7 +277,7 @@ def insitu_df_to_numeric(
         + "_obs_"
         + str(Yr)
     )
-    if Var_type=="SH": #not necessary since there are not flags
+    if Var_type=="SH": #not necessary since there are no flags
         Insitu_yr_flag=Insitu_yr_flag["H_CORR"]
     elif Var_type=="LH":
         Insitu_yr_flag=Insitu_yr_flag["LE_CORR"]
@@ -281,6 +285,24 @@ def insitu_df_to_numeric(
         Insitu_yr_flag=Insitu_yr_flag[flag_type]
     
     return Insitu_yr, Insitu_yr_flag
+
+
+def lt_to_utc_df(Insitu_yr,Lat,Lon):
+    """transforms dataframe Insitu_yr from local time to utc"""
+    #find local timezone
+    tf=timezonefinder.TimezoneFinder()
+    timezone_str=tf.certain_timezone_at(lat=Lat,lng=Lon)
+    timezone=pytz.timezone(timezone_str)
+    #add local time information
+    Insitu_yr.index=[timezone.localize(datetime.datetime.strptime(str(s), "%Y-%m-%d %H:%M:%S")) for s in Insitu_yr.index]
+    #convert local time to utc
+    Insitu_yr.index=[datetime.datetime.strptime(str(s), "%Y-%m-%d %H:%M:%S%z").astimezone(pytz.utc) for s in Insitu_yr.index]
+    #remove timezone information again
+    Insitu_yr.index=[datetime.datetime.strptime(str(s), "%Y-%m-%d %H:%M:%S%z").replace(tzinfo=None) for s in Insitu_yr.index]
+    #remove old year
+    dt = datetime.datetime.strptime("2020-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
+    deltat=int(timezone.utcoffset(dt).total_seconds()/3600)
+    return Insitu_yr[deltat:]
 
 
 def define_start_end(Yr, Data_range, Years):
@@ -331,16 +353,20 @@ def extract_insitu_start_end(Daily_obs_time_average, Insitu_yr, Data_range, Star
             .values
         )
     else:
+        #print(np.sum(Insitu_yr.index.duplicated())) #count duplicates
+        Insitu_yr=Insitu_yr[~Insitu_yr.index.duplicated()] #remove duplicates (which arose from time zone conversion)
         insitu_df_layer = Insitu_yr.asfreq("H").loc[Start:End].asfreq(Data_range.freq)
-        if np.nansum(insitu_df_layer[:]) == 0.0:
-            insitu_df_layer = (
-                Insitu_yr.asfreq("H")
-                .loc[Start:End]
-                .resample("3H")
-                .mean()
-                .asfreq(Data_range.freq)
-            )
+        #if np.nansum(insitu_df_layer[:]) == 0.0: #not for fluxes
+        #    insitu_df_layer = (
+        #        Insitu_yr.asfreq("H")
+        #        .loc[Start:End]
+        #        .resample("3H")
+        #        .mean()
+        #        .asfreq(Data_range.freq)
+        #    )
 
+    print("\ninsitu_df_layer")
+    print(insitu_df_layer)
     return insitu_df_layer
 
 
@@ -440,7 +466,6 @@ def read_and_rescale_insitu_data(
                         var_type,
                         False
                     )
-                    #insitu_yr[insitu_yr_flag != "G"] = pl.nan
                 except:
                     Data_df_layer.loc[str(yr), l] = pl.nan
                     continue
@@ -458,17 +483,36 @@ def read_and_rescale_insitu_data(
                         var_type,
                         False
                     )
-                    #insitu_yr[insitu_yr_flag != "G"] = pl.nan
                 except:
                     Data_df_layer.loc[str(yr), l] = pl.nan
                     continue
-                
+            
+            print("insitu_yr")
+            insitu_yr=pd.DataFrame(insitu_yr)
+            insitu_yr=lt_to_utc_df(insitu_yr,float(lat),float(lon))
+            insitu_yr=pd.DataFrame(insitu_yr)
+            print(insitu_yr)
+            print("---end insitu yr---")
 
             start, end = define_start_end(yr, data_range, years)
-            try:
-                Data_df_layer.loc[start:end, l] = extract_insitu_start_end(
+            
+            print(len(insitu_yr))
+            print(len(Data_df_layer))
+
+            tmp=extract_insitu_start_end(
                     daily_obs_time_average, insitu_yr, data_range, start, end
                 )
+            print(len(tmp))
+            print(l)
+            try: #here: extraction of data based on selected Time_freq in namelist
+                Data_df_layer.loc[:,l] = extract_insitu_start_end(
+                    daily_obs_time_average, insitu_yr, data_range, start, end
+                )
+                #Data_df_layer.loc[start:end, l] = extract_insitu_start_end(
+                #    daily_obs_time_average, insitu_yr, data_range, start, end
+                #)
+                print("Data_df_layer fertig")
+                
             except:
                 raise Exception(
                     "Problem with in situ data extraction for "
@@ -556,7 +600,6 @@ def read_and_rescale_analysis_data(
     for yr in years:
 
         try:
-            print(analysis_dir)
             analysis_yr = pd.read_csv(
                 analysis_dir
                 + "/"
@@ -644,8 +687,6 @@ def read_and_rescale_analysis_data(
         if var_type == "SM" or var_type == "ST":
             Data_df_layer.loc[:, l] = Data_df_layer.loc[:, l] * layer
 
-        print("Data_df_layer")
-        print(Data_df_layer)
     if var_type == "SM":
         Data_analysis = Data_df_layer.sum(skipna=False, axis=1) / sum(depths)
     elif var_type == "ST":
