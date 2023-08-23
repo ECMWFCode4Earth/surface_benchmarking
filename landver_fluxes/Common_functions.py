@@ -94,6 +94,8 @@ class LDAS_config(object):
         self.pre_process_LH = ( 
             False # Preprocess latent heat flux (required for validation)
         )
+        self.lt2utc=False #convert lt to utc: False = no conversion, True = convert insitu data from lt to utc
+
         self.validate_SH = True  # Validate sensible heat flux
         self.validate_LH = True  # Validate latent heat flux
 

@@ -385,7 +385,6 @@ def preprocessData(cfg):
                     lon = stations[:, 2].astype("float") #list of lon
 
                     annual_data_range = data_range[data_range.year == yr]
-                    print("length of annual_data_range: " + str(len(annual_data_range)))
 
                     if cfg.pre_process_SH or cfg.pre_procrocess_LH:
                         data_series_fluxes = xr.DataArray(
