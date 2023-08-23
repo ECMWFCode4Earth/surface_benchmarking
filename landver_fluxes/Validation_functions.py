@@ -383,6 +383,7 @@ def read_and_rescale_insitu_data(
     daily_obs_time_average=False,
     Rescale_data=True,
     ST_QC_threshold_celcius=None,
+    lt2utc=False
 ):
 
     #    Optional outputs:
@@ -487,12 +488,13 @@ def read_and_rescale_insitu_data(
                     Data_df_layer.loc[str(yr), l] = pl.nan
                     continue
             
-            print("insitu_yr")
-            insitu_yr=pd.DataFrame(insitu_yr)
-            insitu_yr=lt_to_utc_df(insitu_yr,float(lat),float(lon))
-            insitu_yr=pd.DataFrame(insitu_yr)
-            print(insitu_yr)
-            print("---end insitu yr---")
+            if lt2utc: 
+                print("... convert LT to UTC ...\ninsitu_yr")
+                insitu_yr=pd.DataFrame(insitu_yr)
+                insitu_yr=lt_to_utc_df(insitu_yr,float(lat),float(lon))
+                insitu_yr=pd.DataFrame(insitu_yr)
+                print(insitu_yr)
+                print("---end insitu yr---")
 
             start, end = define_start_end(yr, data_range, years)
             
@@ -505,9 +507,14 @@ def read_and_rescale_insitu_data(
             print(len(tmp))
             print(l)
             try: #here: extraction of data based on selected Time_freq in namelist
-                Data_df_layer.loc[:,l] = extract_insitu_start_end(
-                    daily_obs_time_average, insitu_yr, data_range, start, end
-                )
+                if lt2utc:
+                    Data_df_layer.loc[:,l] = extract_insitu_start_end(
+                        daily_obs_time_average, insitu_yr, data_range, start, end
+                    )
+                else:
+                    Data_df_layer.loc[start:end,l] = extract_insitu_start_end(
+                        daily_obs_time_average, insitu_yr, data_range, start, end
+                    )
                 #Data_df_layer.loc[start:end, l] = extract_insitu_start_end(
                 #    daily_obs_time_average, insitu_yr, data_range, start, end
                 #)
@@ -741,6 +748,9 @@ def plot_time_series(
     fig.set_figheight(7)
     fig.set_figwidth(9)
 
+    insitu.plot(ax=axes, marker="o", color="b", label="In situ",alpha=0.5) #plot insitu data
+    analysis.plot(ax=axes, linewidth=1, linestyle="--", color="r", label=exp_cur) #plot experiment
+
     # If there is more than one experiment load pickle file for each previous experiment:
     if exp_cur != EXP_list[0]:
         var_exp = dict()
@@ -820,11 +830,6 @@ def plot_time_series(
     else:
         # If only one experiment is validated, then store anomaly CC of this this experiment
         Ranom_exp.append(exp_cur+"_"+str(np.round(Anno_Corr_value,2)))
-
-    analysis.plot(ax=axes, linewidth=1, linestyle="--", color="r", label=exp_cur)
-
-    #insitu.plot(ax=axes, linewidth=1, marker="o", color="b", label="In situ")
-    insitu.plot(ax=axes, marker="o", color="b", label="In situ")
 
     axes.set_title(var_type + " at:" + lat_val + ", lon=" + lon_val, fontsize=10)
     if (var_type == "SM") and SM_rescale:
