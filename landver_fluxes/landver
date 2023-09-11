@@ -32,8 +32,6 @@ def landver_main():
           if cfg.validate_LH:
             df = LANDVER.in_situ_validation(cfg, "LH", val_times, land_type, df)
             
-          print("df to create html")
-          print(df)
           util.web_create(cfg, val_times, land_type, df)
 
 

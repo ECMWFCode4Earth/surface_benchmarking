@@ -327,17 +327,17 @@ def web_obs(cfg, df):
         .sort_index()
     )
 
-    print(
-        """<input 
-  type="text" 
-  id="myInput3" 
-  onkeyup="myFunction3()" 
-  placeholder="Filter table..." 
-  title="title text">"""
-    )
-
     #    df.style.format({'link': make_clickable})
     print("""<h4>Tables of scores (R, R_anom, RMSD, Unbiased RMSD)</h4>""")
+
+    print(
+        """<input 
+    type="text" 
+    id="myInput3" 
+    onkeyup="myFunction3()" 
+    placeholder="Filter table..." 
+    title="title text">"""
+    )
 
     html3 = table_plot.to_html(
         sparsify=False,
@@ -364,18 +364,18 @@ def web_obs(cfg, df):
         .sort_index()
     )
 
-    print(
-        """<input 
-  type="text" 
-  id="myInput4" 
-  onkeyup="myFunction4()" 
-  placeholder="Filter table..." 
-  title="title text">"""
-    )
-
     #    df.style.format({'link': make_clickable})
 
     print("""<h4>Box plots of scores (R, R_anom, RMSD, Unbiased RMSD) </h4>""")
+
+    print(
+        """<input 
+    type="text" 
+    id="myInput4" 
+    onkeyup="myFunction4()" 
+    placeholder="Filter table..." 
+    title="title text">"""
+    )
 
     html4 = box_plot.to_html(
         sparsify=False,
