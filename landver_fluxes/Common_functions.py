@@ -241,8 +241,8 @@ def web_obs(cfg, df):
 
     map_plot = df.loc[df["type"] == "Map"]
 
-    map_plot = map_plot.rename(columns={"metric": "country"})
-    indices[0] = "country"
+    map_plot = map_plot.rename(columns={"metric"})
+    #indices[0] = "country"
 
     map_plot = (
         map_plot.drop(["date", "type", "network"], axis=1)
