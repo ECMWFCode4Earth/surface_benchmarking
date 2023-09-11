@@ -3,6 +3,7 @@ from os import makedirs as mkdir
 import sys
 from warnings import filterwarnings
 import pprint
+from xml.sax import make_parser
 
 filterwarnings("ignore")
 import argparse
@@ -226,23 +227,26 @@ def web_obs(cfg, df):
         .reset_index()
     )
 
-    if "SH" in df.columns:
-        df["SH"] = df.apply(
-            lambda x: make_clickable(x["Surface SH"], "SH"), axis=1
+    if "Surface SH" in df.columns:
+        df["Surface SH"] = df.apply(
+            lambda x: make_clickable(x["Surface SH"], "sshf"), axis=1
         )
     #else:
     #    indices.remove("Surface SH")
-    if "LH" in df.columns:
-        df["LH"] = df.apply(
-            lambda x: make_clickable(x["Surface LH"], "LH"), axis=1
+    if "Surface LH" in df.columns:
+        df["Surface LH"] = df.apply(
+            lambda x: make_clickable(x["Surface LH"], "slhf"), axis=1
         )
     #else:
     #    indices.remove("Surface LH")
 
     map_plot = df.loc[df["type"] == "Map"]
+    print("map plot")
+    print(map_plot)
 
-    map_plot = map_plot.rename(columns={"metric"})
-    #indices[0] = "country"
+
+    map_plot = map_plot.rename(columns={"metric": "country"})
+    indices[0] = "country"
 
     map_plot = (
         map_plot.drop(["date", "type", "network"], axis=1)

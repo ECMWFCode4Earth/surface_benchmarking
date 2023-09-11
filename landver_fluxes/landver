@@ -27,13 +27,13 @@ def landver_main():
           #  Validate sensible heat flux
           if cfg.validate_SH:
             df = LANDVER.in_situ_validation(cfg, "SH", val_times, land_type, df)
-            print("df to create html")
-            print(df)
 
           #  Validate latent heat flux
           if cfg.validate_LH:
             df = LANDVER.in_situ_validation(cfg, "LH", val_times, land_type, df)
             
+          print("df to create html")
+          print(df)
           util.web_create(cfg, val_times, land_type, df)
 
 
