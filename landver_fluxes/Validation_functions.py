@@ -1471,20 +1471,12 @@ def draw_station_map(
         cm = plt.cm.get_cmap("viridis")
 
     map_labels = dict()
-    countries = ["US", "France", "Aus", "Spain", "Germany"]
+    countries = ["Europe"]
     for country in countries:
         map_labels[country] = list()
     for network in Station_Networks:
-        if network in ["USCRN", "SCAN", "SNOTEL"]:
-            map_labels["US"].append(network)
-        if network in ["SMOSMANIA"]:
-            map_labels["France"].append(network)
-        if network in ["REMEDHUS"]:
-            map_labels["Spain"].append(network)
-        if network in ["OZNET"]:
-            map_labels["Aus"].append(network)
-        if network in ["TERENO"]:
-            map_labels["Germany"].append(network)
+        if network in ["ICOS_FLUXNET"]:
+            map_labels["Europe"].append(network)
 
     for country in countries:
         if len(map_labels[country]) == 0:
@@ -1562,6 +1554,20 @@ def draw_station_map(
                 ax.coastlines()
                 ax.add_feature(cart.feature.BORDERS)
 
+            elif country == "Europe": #new case for ICOS
+
+                ax = plt.axes(projection=ccrs.Robinson())
+                extent = [
+                    -10.0,
+                    40.0,
+                    30.0,
+                    70.0,
+                ]  # Define the extent (min lon, max lon, min lat, max lat)
+                ax.set_extent(extent)
+                ax.set_extent(extent)
+                ax.coastlines()
+                ax.add_feature(cart.feature.BORDERS)
+
             n = 0
             markers = ("o", "^", "s")
             for network in map_labels[country]:
@@ -1575,7 +1581,7 @@ def draw_station_map(
                     lat_networks[network + "_" + layer]["period"]
                 ).astype("float")
 
-                if country == "US" or country == "France" or country == "Germany":
+                if country == "US" or country == "France" or country == "Germany" or country=="Europe":
                     scatter_size = 20
                 elif country == "Spain" or country == "Aus":
                     scatter_size = 5

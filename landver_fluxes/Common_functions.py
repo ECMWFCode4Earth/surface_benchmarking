@@ -103,7 +103,7 @@ class LDAS_config(object):
         self.validation_times=["all_times"] # 00_UTC and 12_UTC are optional
         self.climate_classes=["all_climate"]
         self.land_classes=["all_land"] 
-        self.Network = ['ICOS_FLUXNET'] #currently just "ICOS_FLUXNET"
+        self.Network = ['ICOS_FLUXNET'] #currently just "ICOS_FLUXNET" for fluxes
         self.in_situ_dir = "/home/lauracma/Documents/ecmwf_proj/data/ISMN_data/in_situ_data/pre_processed_data/"  # adapted
         self.plot_time_series = True  # Plot time series of soil moisture and temperature for analysis and in situ data
         self.Rescale_data = (
@@ -241,9 +241,6 @@ def web_obs(cfg, df):
     #    indices.remove("Surface LH")
 
     map_plot = df.loc[df["type"] == "Map"]
-    print("map plot")
-    print(map_plot)
-
 
     map_plot = map_plot.rename(columns={"metric": "country"})
     indices[0] = "country"
