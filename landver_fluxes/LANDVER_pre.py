@@ -466,10 +466,7 @@ def preprocessData(cfg):
                                 data_series_LH_new=data_series_LH[0::12,:]
                                 data_series_LH_new[0::2]=1/6*(data_series_LH[19::24,:]+data_series_LH[20::24,:]+data_series_LH[21::24,:]+data_series_LH[22::24,:]+data_series_LH[23::24,:]+data_series_LH[0::24,:])
                                 data_series_LH_new[1::2]=1/6*(data_series_LH[7::24,:]+data_series_LH[8::24,:]+data_series_LH[9::24,:]+data_series_LH[10::24,:]+data_series_LH[11::24,:]+data_series_LH[12::24,:])
-                                data_series_LH=data_series_LH_new
-                                #data_series_SH=data_series_SH[0::12,:] #quick fix
-                                #data_series_LH=data_series_LH[0::12,:]
-                                
+                                data_series_LH=data_series_LH_new                                
                                 
                             elif EXP=="hyfs":
                                 print("... post-processing specified for " + str(EXP))

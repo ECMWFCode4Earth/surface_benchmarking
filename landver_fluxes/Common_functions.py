@@ -215,10 +215,8 @@ def web_obs(cfg, df):
     indices = [
         "metric",
         "expver",
-        "Surface SM",
-        "Rootzone SM",
-        "Surface ST",
-        "Rootzone ST",
+        "Surface SH",
+        "Surface LH",
     ]
     df = (
         df.set_index(["expver", "date", "type", "network", "metric", "variable"])[
@@ -228,30 +226,18 @@ def web_obs(cfg, df):
         .reset_index()
     )
 
-    if "Surface SM" in df.columns:
-        df["Surface SM"] = df.apply(
-            lambda x: make_clickable(x["Surface SM"], "Surface"), axis=1
+    if "SH" in df.columns:
+        df["SH"] = df.apply(
+            lambda x: make_clickable(x["Surface SH"], "SH"), axis=1
         )
-    else:
-        indices.remove("Surface SM")
-    if "Rootzone SM" in df.columns:
-        df["Rootzone SM"] = df.apply(
-            lambda x: make_clickable(x["Rootzone SM"], "Rootzone"), axis=1
+    #else:
+    #    indices.remove("Surface SH")
+    if "LH" in df.columns:
+        df["LH"] = df.apply(
+            lambda x: make_clickable(x["Surface LH"], "LH"), axis=1
         )
-    else:
-        indices.remove("Rootzone SM")
-    if "Surface ST" in df.columns:
-        df["Surface ST"] = df.apply(
-            lambda x: make_clickable(x["Surface ST"], "Surface"), axis=1
-        )
-    else:
-        indices.remove("Surface ST")
-    if "Rootzone ST" in df.columns:
-        df["Rootzone ST"] = df.apply(
-            lambda x: make_clickable(x["Rootzone ST"], "Rootzone"), axis=1
-        )
-    else:
-        indices.remove("Rootzone ST")
+    #else:
+    #    indices.remove("Surface LH")
 
     map_plot = df.loc[df["type"] == "Map"]
 
@@ -259,7 +245,7 @@ def web_obs(cfg, df):
     indices[0] = "country"
 
     map_plot = (
-        map_plot.drop(["date", "type", "network"], axis=1)  # [df["network"] == "odb"]
+        map_plot.drop(["date", "type", "network"], axis=1)
         .set_index(indices)
         .sort_index(axis=0)
     )
@@ -514,6 +500,7 @@ const myFunction3 = () => {
       ...children // <-- All columns
     ]) ? '' : 'none' 
   }
+
   
   trs.forEach(setTrStyleDisplay)
 }

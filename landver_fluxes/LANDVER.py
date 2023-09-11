@@ -1712,7 +1712,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
                     df = df.append(pd.DataFrame(dic), ignore_index=True, sort=False)
 
-            # Draw map of station scores
+        # Draw map of station scores
 
         df = ldasv.draw_station_map(
             df,
