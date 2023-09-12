@@ -4,6 +4,7 @@ import sys
 from warnings import filterwarnings
 import pprint
 from xml.sax import make_parser
+from xmlrpc.client import boolean
 
 filterwarnings("ignore")
 import argparse
@@ -84,18 +85,20 @@ class LDAS_config(object):
             "DOMAIN": list,
             "GRID": list,
             "EXPNAME": list,
+            "LT2UTC": boolean,
+            "UTC2LT": boolean,
+            "ACC6h": boolean,
         }
 
         self.config_file = None
         #self.extract_SH = False  # Extract grib files from MARS (required for preprocessing) #not yet implemented for fluxes
         #self.extract_LH = False  # Extract grib files from MARS (required for preprocessing)
         self.pre_process_SH = (
-            False  # Preprocess sensible heat flux (required for validation)
+            True  # Preprocess sensible heat flux (required for validation)
         )
         self.pre_process_LH = ( 
-            False # Preprocess latent heat flux (required for validation)
+            True # Preprocess latent heat flux (required for validation)
         )
-        self.lt2utc=False #convert lt to utc: False = no conversion, True = convert insitu data from lt to utc
 
         self.validate_SH = True  # Validate sensible heat flux
         self.validate_LH = True  # Validate latent heat flux

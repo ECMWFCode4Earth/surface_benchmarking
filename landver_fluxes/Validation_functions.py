@@ -383,7 +383,7 @@ def read_and_rescale_insitu_data(
     daily_obs_time_average=False,
     Rescale_data=True,
     ST_QC_threshold_celcius=None,
-    lt2utc=False
+    lt2utc=False,
 ):
 
     #    Optional outputs:
@@ -488,6 +488,9 @@ def read_and_rescale_insitu_data(
                     Data_df_layer.loc[str(yr), l] = pl.nan
                     continue
             
+            print("insitu_yr")
+            print(insitu_yr)
+
             if lt2utc: 
                 print("... convert LT to UTC ...\ninsitu_yr")
                 insitu_yr=pd.DataFrame(insitu_yr)

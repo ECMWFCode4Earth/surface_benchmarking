@@ -97,8 +97,6 @@ def in_situ_validation(cfg, var, times, land_type, df):
         if land_type != "all_land":
             land_type_codes = ldasv.land_class_lookup_table(land_type)
 
-        print("data_range")
-        print(data_range)
         # For seasonal scores:
         mlist = [[12, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]]
         slist = ["winter", "spring", "summer", "autumn"]

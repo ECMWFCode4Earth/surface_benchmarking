@@ -437,8 +437,8 @@ def preprocessData(cfg):
                             print("... selected nearest gridpoints")
                             
                             ### experiment-dependent post processing ###
-                            if EXP=="0001":
-                                print("... post-processing specified for " + str(EXP))
+                            if EXP=="0001" and cfg.CLASS[int(e)]=="ea": #era5
+                                print("... post-processing specified for " + str(EXP) + str(cfg.CLASS[e]))
                                 hours_avail=["00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"]
                                 #hours_avail: hours for which the model output is provided
                                 monlen=[31,29,31,30,31,30,31,31,30,31,30,31] #days per month, this is for 2020 -> needed for cutting
@@ -446,9 +446,10 @@ def preprocessData(cfg):
                                 data_series_SH=data_series_SH[:monlen[idf]*26,:] #26 instead of 24 because of the two artificials zeros per day
                                 data_series_LH=data_series_LH[:monlen[idf]*26,:]
                                 print("after cutting: " + str(np.shape(data_series_SH)))
+                                off=0 #offset due to storage of era5, for details see notebook on time lag
                                 #convert unit and adapt sign convention:
-                                data_series_SH=data_series_SH/3600*(-1)
-                                data_series_LH=data_series_LH/3600*(-1)
+                                data_series_SH=data_series_SH[off:]/3600*(-1)
+                                data_series_LH=data_series_LH[off:]/3600*(-1)
                                 #remove zero flux lines which resulted from former deaccumlation
                                 idx=(data_series_SH[:,1]==0)
                                 data_series_SH=data_series_SH[~idx,:]
@@ -456,18 +457,61 @@ def preprocessData(cfg):
                                 #prepare requested time resolution (the above data_series_XX contains all hours)
                                 for t in Time_freq:
                                     if t not in hours_avail:
-                                        print("WARNING: You request a time for which the model does not provide any output")
-                                time_index_list=[i for i, item in enumerate(hours_avail) if item in Time_freq]
-                                #accumulate on 6h for 00 and 12 utc
-                                data_series_SH_new=data_series_SH[0::12]
-                                data_series_SH_new[0::2]=1/6*(data_series_SH[19::24,:]+data_series_SH[20::24,:]+data_series_SH[21::24,:]+data_series_SH[22::24,:]+data_series_SH[23::24,:]+data_series_SH[0::24,:])
-                                data_series_SH_new[1::2]=1/6*(data_series_SH[7::24,:]+data_series_SH[8::24,:]+data_series_SH[9::24,:]+data_series_SH[10::24,:]+data_series_SH[11::24,:]+data_series_SH[12::24,:])
-                                data_series_SH=data_series_SH_new
-                                data_series_LH_new=data_series_LH[0::12,:]
-                                data_series_LH_new[0::2]=1/6*(data_series_LH[19::24,:]+data_series_LH[20::24,:]+data_series_LH[21::24,:]+data_series_LH[22::24,:]+data_series_LH[23::24,:]+data_series_LH[0::24,:])
-                                data_series_LH_new[1::2]=1/6*(data_series_LH[7::24,:]+data_series_LH[8::24,:]+data_series_LH[9::24,:]+data_series_LH[10::24,:]+data_series_LH[11::24,:]+data_series_LH[12::24,:])
-                                data_series_LH=data_series_LH_new                                
-                                
+                                        print("WARNING: You request a time for which the model does not provide any output.")
+                                nt=int(len(Time_freq))
+                                dt=int(24/nt)
+                                if cfg.ACC6h:
+                                    ns=np.shape(data_series_SH)[0] #original length of data series
+                                    data_series_SH_new=data_series_SH[0::dt]
+                                    data_series_LH_new=data_series_LH[0::dt]
+                                    for i,t in enumerate(Time_freq):
+                                        t=int(t)-off
+                                        #accumulate last 6h:
+                                        data_series_SH_new[i::nt]=1/6*(data_series_SH[t-5::24,:]+data_series_SH[t-4::24,:]+data_series_SH[t-3::24,:]+data_series_SH[t-2::24,:]+data_series_SH[t-1::24,:]+data_series_SH[t::24,:])
+                                        data_series_LH_new[i::nt]=1/6*(data_series_LH[t-5::24,:]+data_series_LH[t-4::24,:]+data_series_LH[t-3::24,:]+data_series_LH[t-2::24,:]+data_series_LH[t-1::24,:]+data_series_LH[t::24,:])
+                                        #accumulate around the desired time:
+                                        #data_series_SH_new[i::nt]=1/6*(data_series_SH[t-3::24,:]+data_series_SH[t-2::24,:]+data_series_SH[t-1::24,:]+data_series_SH[t::24,:]+data_series_SH[t+1::24,:]+data_series_SH[t+2::24,:])
+                                        #data_series_LH_new[i::nt]=1/6*(data_series_LH[t-3::24,:]+data_series_LH[t-2::24,:]+data_series_LH[t-1::24,:]+data_series_LH[t::24,:]+data_series_LH[t+1::24,:]+data_series_LH[t+2::24,:])
+                                    data_series_SH=data_series_SH_new
+                                    data_series_LH=data_series_LH_new
+                                else: #no accumulation
+                                    data_series_SH_new=data_series_SH[int(Time_freq[0])::dt] #assumes that the times are chosen equidistantly
+                                    data_series_LH_new=data_series_LH[int(Time_freq[0])::dt]                                    
+                                                    
+
+                            elif EXP=="0001" and cfg.CLASS[int(e)]=="l5": #era5land
+                                print("... post-processing specified for " + str(EXP) + str(cfg.CLASS[e]))
+                                hours_avail=["00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"]
+                                #hours_avail: hours for which the model output is provided
+                                monlen=[31,29,31,30,31,30,31,31,30,31,30,31] #days per month, this is for 2020 -> needed for cutting (no overhang here)
+                                data_series_SH=data_series_SH[:monlen[idf]*24,:] 
+                                data_series_LH=data_series_LH[:monlen[idf]*24,:]
+                                #convert unit and adapt sign convention:
+                                data_series_SH=data_series_SH/3600*(-1)
+                                data_series_LH=data_series_LH/3600*(-1)
+                                #prepare requested time resolution (the above data_series_XX contains all hours)
+                                for t in Time_freq:
+                                    if t not in hours_avail:
+                                        print("WARNING: You request a time for which the model does not provide any output.")
+                                nt=int(len(Time_freq))
+                                dt=int(24/nt)
+                                if cfg.ACC6h:
+                                    data_series_SH_new=data_series_SH[0::dt]
+                                    data_series_LH_new=data_series_LH[0::dt]
+                                    for i,t in enumerate(Time_freq):
+                                        t=int(t)
+                                        #accumulate last 6h:
+                                        data_series_SH_new[i::nt]=1/6*(data_series_SH[t-5::24,:]+data_series_SH[t-4::24,:]+data_series_SH[t-3::24,:]+data_series_SH[t-2::24,:]+data_series_SH[t-1::24,:]+data_series_SH[t::24,:])
+                                        data_series_LH_new[i::nt]=1/6*(data_series_LH[t-5::24,:]+data_series_LH[t-4::24,:]+data_series_LH[t-3::24,:]+data_series_LH[t-2::24,:]+data_series_LH[t-1::24,:]+data_series_LH[t::24,:])
+                                        #accumulate around the desired time:
+                                        #data_series_SH_new[i::nt]=1/6*(data_series_SH[t-3::24,:]+data_series_SH[t-2::24,:]+data_series_SH[t-1::24,:]+data_series_SH[t::24,:]+data_series_SH[t+1::24,:]+data_series_SH[t+2::24,:])
+                                        #data_series_LH_new[i::nt]=1/6*(data_series_LH[t-3::24,:]+data_series_LH[t-2::24,:]+data_series_LH[t-1::24,:]+data_series_LH[t::24,:]+data_series_LH[t+1::24,:]+data_series_LH[t+2::24,:])
+                                    data_series_SH=data_series_SH_new
+                                    data_series_LH=data_series_LH_new
+                                else: #no accumulation
+                                    data_series_SH_new=data_series_SH[int(Time_freq[0])::dt] #assumes that the times are chosen equidistantly
+                                    data_series_LH_new=data_series_LH[int(Time_freq[0])::dt]
+
                             elif EXP=="hyfs":
                                 print("... post-processing specified for " + str(EXP))
                                 hours_avail=["00","06","12","18"] #hours_avail: hours for which the model output is provided
@@ -484,16 +528,21 @@ def preprocessData(cfg):
                                 #prepare requested time resolution (the above data_series_XX contains all hours)
                                 for t in Time_freq:
                                     if t not in hours_avail:
-                                        print("WARNING: You request a time for which the model does not provide any output")
-                                time_index_list=[i for i, item in enumerate(hours_avail) if item in Time_freq]
-                                data_series_SH=data_series_SH[0::2,:] #quick fix
-                                data_series_LH=data_series_LH[0::2,:]
+                                        print("WARNING: You request a time for which the model does not provide any output.")
+                                nt=len(Time_freq)
+                                dt=int(4/nt)
+                                start=int(int(Time_freq[0])/6)
+                                data_series_SH=data_series_SH[start::dt,:]
+                                data_series_LH=data_series_LH[start::dt,:]
 
+                                if not cfg.ACC6h:
+                                    print("WARNING: The hyfs experiment data is accumulated on 6h, but control maybe not. Consider the namelist option ACC6h.")
+                            
                             else:
-                                print("WARNING: you use an experiment for which no special post-processing is defined")
+                                print("WARNING: You use an experiment for which no special post-processing is defined.")
 
 
-                            #concatenate of all files
+                            #concatenate all files
                             nl2=np.shape(data_series_SH)[0]
                             data_series_fluxes[nl:(nl+nl2),:,0]=data_series_SH
                             data_series_fluxes[nl:(nl+nl2),:,1]=data_series_LH
