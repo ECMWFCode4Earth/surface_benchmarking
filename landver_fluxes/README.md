@@ -31,3 +31,12 @@
         - create directories to store results
     6. calculate scores for all networks together (average over all networks)
 - create html file that summarizes all scores (with function `web_create` from `Common_functions.py`)
+
+
+
+├── `Common_functions.py` <br>
+├── `landver`<br>
+├── `LANDVER_pre.py`<br>
+├── `LANDVER.py`<br>
+├── `Options_namelist.py` <br>
+└── `Validation_functions.py`

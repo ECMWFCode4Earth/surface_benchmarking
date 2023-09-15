@@ -448,8 +448,9 @@ def preprocessData(cfg):
                                 print("after cutting: " + str(np.shape(data_series_SH)))
                                 off=0 #offset due to storage of era5, for details see notebook on time lag
                                 #convert unit and adapt sign convention:
-                                data_series_SH=data_series_SH[off:]/3600*(-1)
-                                data_series_LH=data_series_LH[off:]/3600*(-1)
+                                if cfg.fluxes_units=="J":
+                                    data_series_SH=data_series_SH[off:]/3600*(-1)
+                                    data_series_LH=data_series_LH[off:]/3600*(-1)
                                 #remove zero flux lines which resulted from former deaccumlation
                                 idx=(data_series_SH[:,1]==0)
                                 data_series_SH=data_series_SH[~idx,:]
@@ -487,8 +488,9 @@ def preprocessData(cfg):
                                 data_series_SH=data_series_SH[:monlen[idf]*24,:] 
                                 data_series_LH=data_series_LH[:monlen[idf]*24,:]
                                 #convert unit and adapt sign convention:
-                                data_series_SH=data_series_SH/3600*(-1)
-                                data_series_LH=data_series_LH/3600*(-1)
+                                if cfg.fluxes_units=="J": #convert to W/m^2
+                                    data_series_SH=data_series_SH/3600*(-1)
+                                    data_series_LH=data_series_LH/3600*(-1)
                                 #prepare requested time resolution (the above data_series_XX contains all hours)
                                 for t in Time_freq:
                                     if t not in hours_avail:
@@ -516,8 +518,9 @@ def preprocessData(cfg):
                                 print("... post-processing specified for " + str(EXP))
                                 hours_avail=["00","06","12","18"] #hours_avail: hours for which the model output is provided
                                 #convert unit and adapt sign convention:
-                                data_series_SH=data_series_SH/(3600*6)*-1
-                                data_series_LH=data_series_LH/(3600*6)*-1
+                                if cfg.fluxes_units=="J":
+                                    data_series_SH=data_series_SH/(3600*6)*-1
+                                    data_series_LH=data_series_LH/(3600*6)*-1
                                 #deaccumulation
                                 data_series_SH[3::4]=data_series_SH[3::4]-data_series_SH[2::4]
                                 data_series_SH[2::4]=data_series_SH[2::4]-data_series_SH[1::4]

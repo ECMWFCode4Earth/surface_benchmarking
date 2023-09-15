@@ -112,12 +112,13 @@ class LDAS_config(object):
         self.Rescale_data = (
             False  # Rescale in situ and analysis SM using max/min values = 1.0/0.0
         )
-        self.SH_units = "J"  # units can be "J" for J/m^2 or "W" for W/m^2
+        self.fluxes_units = "J" #"options: J" for J/m^2 (will be converted to W/m^2) and "W" for W/m^2 (no conversion)
+        self.SH_units = "J" #units separately
         self.LH_units = "J"
-        self.fluxes_units = "J"
+
         self.validation_layer = [
             "Surface"
-        ]  # just surface
+        ]  # just surface (for fluxes)
         self.ST_quality_control = False  # Screen SM where soil temperature less than specified value ST_QC_threshold #not yet adapted
         self.ST_QC_threshold = (
             277.15  # Minimum soil temperature threshold (degrees Kelvin)

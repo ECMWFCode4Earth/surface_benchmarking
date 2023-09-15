@@ -1166,8 +1166,10 @@ def draw_stats_table(
             unit = "m$^3$/m$^3$"
         else:
             unit = "-"
-    else:
+    elif var_type == "ST":
         unit = "K"
+    elif var_type == "SH" or var_type == "LH":
+        unit = "W/m^2"
 
     if station_type == "All_stations":
         # Calculate filtered scores for all networks
@@ -2174,6 +2176,8 @@ def draw_station_box_plots_sub_periods(
             unit = "m3/m3"
         else:
             unit = "-"
+    elif var_type=="SH" or var_type=="LH":
+        unit="W/m$^2$"
     else:
         unit = "K"
 
@@ -2346,13 +2350,15 @@ def draw_station_box_plots_sub_periods_allExp(
     df,
 ):
 
-    #    ## BoxPlots
+    ### BoxPlots
 
     if var_type == "SM":
         if SM_units == "Volumetric":
             unit = "m$^3$/m$^3$"
         else:
             unit = "-"
+    elif var_type=="SH" or var_type=="LH":
+        unit="W/m$^2$"
     else:
         unit = "K"
 
