@@ -32,6 +32,6 @@ EXPNAME =  ["ERA5","hyfs"]
 
 #Switches
 LT2UTC = True #LT to UTC?
-UTC2LT = False #UTC to LT? (both False means, that no conversion will be applies)
+UTC2LT = False #UTC to LT? (both False means, that no conversion will be applied)
 ACC6h = True #Accumulate on 6h?
 

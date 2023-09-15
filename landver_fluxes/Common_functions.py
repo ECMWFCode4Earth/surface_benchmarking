@@ -113,7 +113,7 @@ class LDAS_config(object):
             False  # Rescale in situ and analysis SM using max/min values = 1.0/0.0
         )
         self.fluxes_units = "J" #"options: J" for J/m^2 (will be converted to W/m^2) and "W" for W/m^2 (no conversion)
-        self.SH_units = "J" #units separately
+        self.SH_units = "J" #units separately (only used in in_situ_validation, not for conversion)
         self.LH_units = "J"
 
         self.validation_layer = [

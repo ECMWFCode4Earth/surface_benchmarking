@@ -288,7 +288,7 @@ def insitu_df_to_numeric(
 
 
 def lt_to_utc_df(Insitu_yr,Lat,Lon):
-    """transforms dataframe Insitu_yr from local time to utc"""
+    """converts dataframe Insitu_yr (at location Lat, Lon) from local time to utc"""
     #find local timezone
     tf=timezonefinder.TimezoneFinder()
     timezone_str=tf.certain_timezone_at(lat=Lat,lng=Lon)
@@ -296,14 +296,31 @@ def lt_to_utc_df(Insitu_yr,Lat,Lon):
     #add local time information
     Insitu_yr.index=[timezone.localize(datetime.datetime.strptime(str(s), "%Y-%m-%d %H:%M:%S")) for s in Insitu_yr.index]
     #convert local time to utc
-    Insitu_yr.index=[datetime.datetime.strptime(str(s), "%Y-%m-%d %H:%M:%S%z").astimezone(pytz.utc) for s in Insitu_yr.index]
-    #remove timezone information again
-    Insitu_yr.index=[datetime.datetime.strptime(str(s), "%Y-%m-%d %H:%M:%S%z").replace(tzinfo=None) for s in Insitu_yr.index]
-    #remove old year
+    Insitu_yr.index=[datetime.datetime.strptime(str(s), "%Y-%m-%d %H:%M:%S%z").astimezone(pytz.utc).replace(tzinfo=None) for s in Insitu_yr.index]
+    #remove timezone information again (merged with line above)
+    #Insitu_yr.index=[datetime.datetime.strptime(str(s), "%Y-%m-%d %H:%M:%S%z").replace(tzinfo=None) for s in Insitu_yr.index]
+    #remove old year (when lt is in new year, but utc not)
     dt = datetime.datetime.strptime("2020-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
     deltat=int(timezone.utcoffset(dt).total_seconds()/3600)
     return Insitu_yr[deltat:]
 
+def utc_to_lt_df(Insitu_yr,Lat,Lon):
+    """converts dataframe Insitu_yr (at location Lat, Lon) from utc to local time"""
+    #find local timezone
+    tf=timezonefinder.TimezoneFinder()
+    timezone_str=tf.certain_timezone_at(lat=Lat,lng=Lon)
+    timezone=pytz.timezone(timezone_str)
+    timezone_utc=pytz.timezone(pytz.utc)
+    #add utc time information
+    Insitu_yr.index=[timezone_utc.localize(datetime.datetime.strptime(str(s), "%Y-%m-%d %H:%M:%S")) for s in Insitu_yr.index]
+    #convert utc to local time
+    Insitu_yr.index=[datetime.datetime.strptime(str(s), "%Y-%m-%d %H:%M:%S%z").astimezone(timezone_utc).replace(tzinfo=None) for s in Insitu_yr.index]
+    #remove timezone information again (merged with line above)
+    #Insitu_yr.index=[datetime.datetime.strptime(str(s), "%Y-%m-%d %H:%M:%S%z").replace(tzinfo=None) for s in Insitu_yr.index]
+    #remove old year (when utc is new year, but lt not)
+    dt = datetime.datetime.strptime("2020-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
+    deltat=int(timezone.utcoffset(dt).total_seconds()/3600)
+    return Insitu_yr[deltat:]
 
 def define_start_end(Yr, Data_range, Years):
 
@@ -384,6 +401,7 @@ def read_and_rescale_insitu_data(
     Rescale_data=True,
     ST_QC_threshold_celcius=None,
     lt2utc=False,
+    utc2lt=False,
 ):
 
     #    Optional outputs:

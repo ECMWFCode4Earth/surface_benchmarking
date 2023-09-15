@@ -612,7 +612,8 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         lon_insitu,
                         insitu_depths,
                         data_range,
-                        cfg.daily_obs_time_average
+                        lt2utc=cfg.LT2UTC,
+                        utc2lt=cfg.UTC2LT,
                     )
                     print("\n--- after read_and_rescale ---")          
                     print(insitu_df)

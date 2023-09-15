@@ -385,7 +385,7 @@ def preprocessData(cfg):
                     lon = stations[:, 2].astype("float") #list of lon
 
                     annual_data_range = data_range[data_range.year == yr]
-
+                
                     if cfg.pre_process_SH or cfg.pre_procrocess_LH:
                         data_series_fluxes = xr.DataArray(
                             pl.empty((annual_data_range.size, len(lat), 2)), #2 instead of 4, since we have sh and lh (just sfc level)
@@ -397,23 +397,28 @@ def preprocessData(cfg):
                     task = 0
 
                     nl=0
+
+                    #first month: needed for cutting when not all files are used
+                    #first_mon=cfg.analysis_period[0].split("-")
+                    #first_mon=int(first_mon[1])
+
                     for idf in range(len(file)):
                         f=file[idf]
                         showProgress(task, n_tasks)
                         task += 1
 
-                        #day_fc = d - pd.Timedelta(int(cfg.STEP[e]), "h")
+                        #day_fc = d - pd.Timedelta(int(cfg.STEP[e]), "h") #not possible since no day in flux file names
                         #print(n,e,yr,d)
                         if cfg.pre_process_SH or cfg.pre_process_LH:
                             fset1 = mv.read(f)
-                            #fset1 = mv.read( #this works as well
-                            #    grib_dir
-                            #    + str(day_fc.year)
-                            #    + "/fluxes_"
-                            #    + str(cfg.EXPVER[e]) #fluxes file names contain experiment
-                            #    + "_"
-                            #    + str(day_fc.year)
-                            #    + "%02d" % (day_fc.month)
+                            #fset1 = mv.read( #works when day_fc available
+                                #grib_dir
+                                #+ str(yr)
+                                #+ "/fluxes_"
+                                #+ str(cfg.EXPVER[e]) #fluxes file names contain experiment
+                                #+ "_"
+                                #+ str(yr)
+                                #+ "%02d" % (day_fc.month)
                                 #+ "%02d" % (day_fc.day) #fluxes file names have no day
                                 #+ "%02d" % (day_fc.hour) #fluxes file names have no hour
                                 #+ ".grib" #fluxes files do not have the extension
@@ -424,13 +429,11 @@ def preprocessData(cfg):
                             file_lh=fset1["slhf"]
                             print("... selected sshf and slhf from file")
                             coords=[lat,lon] #that's a list of pairs (lat,lon)
-                            #print(coords)
-                            #print(d)
-
 
                             data_series_SH = mv.nearest_gridpoint( #returns numpy array of shape (number of measurements,number of stations)
                                 file_sh,lat,lon
                             )
+                            
                             data_series_LH = mv.nearest_gridpoint( #returns numpy array of shape (number of measurements,number of stations)
                                 file_lh,lat,lon
                             )
@@ -476,15 +479,13 @@ def preprocessData(cfg):
                                     data_series_SH=data_series_SH_new
                                     data_series_LH=data_series_LH_new
                                 else: #no accumulation
-                                    data_series_SH_new=data_series_SH[int(Time_freq[0])::dt] #assumes that the times are chosen equidistantly
-                                    data_series_LH_new=data_series_LH[int(Time_freq[0])::dt]                                    
-                                                    
+                                    data_series_SH=data_series_SH[int(Time_freq[0])::dt] #assumes that the times are chosen equidistantly
+                                    data_series_LH=data_series_LH[int(Time_freq[0])::dt]                                              
 
                             elif EXP=="0001" and cfg.CLASS[int(e)]=="l5": #era5land
                                 print("... post-processing specified for " + str(EXP) + str(cfg.CLASS[e]))
                                 hours_avail=["00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"]
                                 #hours_avail: hours for which the model output is provided
-                                monlen=[31,29,31,30,31,30,31,31,30,31,30,31] #days per month, this is for 2020 -> needed for cutting (no overhang here)
                                 data_series_SH=data_series_SH[:monlen[idf]*24,:] 
                                 data_series_LH=data_series_LH[:monlen[idf]*24,:]
                                 #convert unit and adapt sign convention:
@@ -511,8 +512,8 @@ def preprocessData(cfg):
                                     data_series_SH=data_series_SH_new
                                     data_series_LH=data_series_LH_new
                                 else: #no accumulation
-                                    data_series_SH_new=data_series_SH[int(Time_freq[0])::dt] #assumes that the times are chosen equidistantly
-                                    data_series_LH_new=data_series_LH[int(Time_freq[0])::dt]
+                                    data_series_SH=data_series_SH[int(Time_freq[0])::dt] #assumes that the times are chosen equidistantly
+                                    data_series_LH=data_series_LH[int(Time_freq[0])::dt]
 
                             elif EXP=="hyfs":
                                 print("... post-processing specified for " + str(EXP))
