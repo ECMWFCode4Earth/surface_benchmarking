@@ -33,10 +33,7 @@
 - create html file that summarizes all scores (with function `web_create` from `Common_functions.py`)
 
 
-
-├── `Common_functions.py` <br>
-├── `landver`<br>
-├── `LANDVER_pre.py`<br>
-├── `LANDVER.py`<br>
-├── `Options_namelist.py` <br>
-└── `Validation_functions.py`
+### How to run the code?
+- adapt the namelist `Options_namelist.py` to the desired experiments/resolution/...
+- run on terminal: `./landver Options_namelist.py`
+- a html output file will be created which summarizes all plots and scores in a table

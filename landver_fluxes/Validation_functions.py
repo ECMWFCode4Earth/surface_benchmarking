@@ -382,8 +382,8 @@ def extract_insitu_start_end(Daily_obs_time_average, Insitu_yr, Data_range, Star
         #        .asfreq(Data_range.freq)
         #    )
 
-    print("\ninsitu_df_layer")
-    print(insitu_df_layer)
+    #print("\ninsitu_df_layer")
+    #print(insitu_df_layer)
     return insitu_df_layer
 
 
@@ -506,27 +506,23 @@ def read_and_rescale_insitu_data(
                     Data_df_layer.loc[str(yr), l] = pl.nan
                     continue
             
-            print("insitu_yr")
-            print(insitu_yr)
+            #print("insitu_yr")
+            #print(insitu_yr)
 
             if lt2utc: 
-                print("... convert LT to UTC ...\ninsitu_yr")
+                print("\n... convert LT to UTC ...")
                 insitu_yr=pd.DataFrame(insitu_yr)
                 insitu_yr=lt_to_utc_df(insitu_yr,float(lat),float(lon))
                 insitu_yr=pd.DataFrame(insitu_yr)
-                print(insitu_yr)
-                print("---end insitu yr---")
+                #print(insitu_yr)
+                #print("---end insitu yr---")
 
             start, end = define_start_end(yr, data_range, years)
-            
-            print(len(insitu_yr))
-            print(len(Data_df_layer))
 
             tmp=extract_insitu_start_end(
                     daily_obs_time_average, insitu_yr, data_range, start, end
                 )
-            print(len(tmp))
-            print(l)
+           
             try: #here: extraction of data based on selected Time_freq in namelist
                 if lt2utc:
                     Data_df_layer.loc[:,l] = extract_insitu_start_end(
@@ -539,7 +535,7 @@ def read_and_rescale_insitu_data(
                 #Data_df_layer.loc[start:end, l] = extract_insitu_start_end(
                 #    daily_obs_time_average, insitu_yr, data_range, start, end
                 #)
-                print("Data_df_layer fertig")
+                #print("Data_df_layer ready")
                 
             except:
                 raise Exception(

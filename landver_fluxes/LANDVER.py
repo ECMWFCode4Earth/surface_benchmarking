@@ -559,7 +559,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
                 # Loop over the stations:
                 for i in range(len(lat_lon_list["merged"]["analysis_index"])):
-                    print("station index"+str(i))
+                    #print("station index"+str(i))
 
                     if len(lat_lon_list["merged"]["analysis_index"]) == 0:
                         print("No " + land_type + " available for network " + network)
@@ -615,7 +615,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         lt2utc=cfg.LT2UTC,
                         utc2lt=cfg.UTC2LT,
                     )
-                    print("\n--- after read_and_rescale ---")          
+                    print("\n... after read_and_rescale")          
                     print(insitu_df)
                     ### read (and rescale) preprocessed insitu and analysis data
                     if (var == "SM") and (cfg.ST_quality_control):
@@ -656,7 +656,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
                         cfg.ST_ML10[e],
                         cfg.ST_QC_threshold,
                     )
-                    print("after reading in analysis")
+                    print("...read in analysis")
                     insitu_df.loc[:][pl.isnan(analysis_df.loc[:])] = pl.nan
 
                     ### orography ### (not yet used for fluxes)
@@ -786,7 +786,7 @@ def in_situ_validation(cfg, var, times, land_type, df):
 
                     # Calculate stats where a reasonable amount of data is available:
                     if len(array[1]) > cfg.min_obs:
-                        print("...calculate scores (enough obses exist)")
+                        print("...calculate scores (if enough obses exist)")
 
                         # Calculate scores over the entire period
                         bias_val, rmsd_val, corr_val, ano_corr_val = (

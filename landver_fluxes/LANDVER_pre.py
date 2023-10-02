@@ -448,7 +448,7 @@ def preprocessData(cfg):
                                 #throw overhang away (the files for shorter months are too long and contain already the beginning of the following month)
                                 data_series_SH=data_series_SH[:monlen[idf]*26,:] #26 instead of 24 because of the two artificials zeros per day
                                 data_series_LH=data_series_LH[:monlen[idf]*26,:]
-                                print("after cutting: " + str(np.shape(data_series_SH)))
+                                #print("after cutting: " + str(np.shape(data_series_SH)))
                                 off=0 #offset due to storage of era5, for details see notebook on time lag
                                 #convert unit and adapt sign convention:
                                 if cfg.fluxes_units=="J":

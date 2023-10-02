@@ -18,15 +18,14 @@ ANOFFSET =  ["9","9"]
 STREAM =    ["oper","oper"]
 REPRES =    ["SH","SH"]
 LEVTYPE =   ["SFC","SFC"]
-TIME = ["12","12"]
-#TIME_RES = ["12","2"] #every ith requested value, note: depends on original resolution
+TIME = ["00/12","00/12"]
 STEP =      ["00","00"]
 DOMAIN =    ["G","G"]
 GRID =      ["av","av"]
 EXPNAME =  ["ERA5","hyfs"]
 
 #Switches
-LT2UTC = False #LT to UTC?
+LT2UTC = True #LT to UTC?
 UTC2LT = False #UTC to LT? (both False means, that no conversion will be applies)
 ACC6h = True #Accumulate on 6h?
 
